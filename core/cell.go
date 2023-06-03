@@ -1,12 +1,8 @@
 package core
 
-import (
-    "fmt"
-)
-
 type Direction uint
 const (
-    NORD Direction = iota
+    NORTH Direction = iota
     SOUTH
     EAST
     WEST
@@ -22,15 +18,12 @@ const (
 type Cell interface {
     forcedUpdate() bool
     Update(grid [3][3](*Cell)) []point
+    Check() bool
+    Power()
 }
 
 /* Empty cell */
 type None struct {}
-
-// No direction but technically always faced nord
-func (None) Dir() Direction {
-    return NORD
-}
 
 // In fact, it should never be updated
 func (None) Update([3][3](*Cell)) []point { return []point{} }
@@ -39,6 +32,9 @@ func (None) Update([3][3](*Cell)) []point { return []point{} }
 func (None) forcedUpdate() bool {
     return false
 }
+
+func (None) Power() {}
+func (None) Check() bool { return false }
 // ------------
 
 
@@ -48,9 +44,10 @@ type Wire struct {
     lit bool
 }
 
-// Has a direction
-func (w Wire) Dir() Direction {
-    return w.dir
+func (w Wire) Check() bool { return w.lit }
+
+func (w *Wire) Power() {
+    w.lit = true
 }
 
 // Doesn't forces updates on other cells
@@ -59,10 +56,12 @@ func (Wire) forcedUpdate() bool {
 }
 
 // Pass signal to a cell that it faced with
-func (w Wire) Update(grid [3][3](*Cell)) []point {
+func (w *Wire) Update(grid [3][3](*Cell)) []point {
     if(!w.lit) {return []point{}}
-    // TODO
-    return []point{}
+    p := dir2point(w.dir, point{1,1})
+    cell := grid[p.x][p.y]
+    (*cell).Power()
+    return []point{p}
 }
 // ------------
 
@@ -71,10 +70,9 @@ type Source struct {
     dir Direction
 }
 
-// Has a direction
-func (s Source) Direction() Direction {
-    return s.dir
-}
+func (Source) Check() bool { return true }
+
+func (Source) Power() {}
 
 // Updates other cells
 func (Source) forcedUpdate() bool {
@@ -82,14 +80,10 @@ func (Source) forcedUpdate() bool {
 }
 
 // Powers the next cell
-func (s Source) Update(grid [3][3](*Cell)) []point {
+func (s *Source) Update(grid [3][3](*Cell)) []point {
     p := dir2point(s.dir, point{1, 1})
-    switch t := (*grid[p.x][p.y]).(type) {
-    default:
-        fmt.Printf("%T\n", t)
-    }
-    return []point{}
-    // TODO: This is just testing code
+    (*grid[p.x][p.y]).Power()
+    return []point{p}
 }
 // ------------
 
@@ -99,20 +93,175 @@ type MemCell struct {
     state bool    // State -> On/Off
 }
 
-func (mc MemCell) Dir() Direction {
-    return mc.dir
+func (mc MemCell) Check() bool { return mc.state }
+
+// Depends, it could work as source
+func (mc MemCell) forcedUpdate() bool {
+    return mc.state
 }
 
-func (MemCell) forcedUpdate() bool {
-    return false
+func (mc *MemCell) Power() {
+    mc.state = !mc.state
 }
 
 // Works as source that can be turned off or on
-func (mc MemCell) Update(grid [3][3](*Cell)) []point {
+func (mc *MemCell) Update(grid [3][3](*Cell)) []point {
     if(!mc.state) {return []point{}}
     p := dir2point(mc.dir, point{1, 1})
+    cell := grid[p.x][p.y]
+    switch t := (*cell).(type) {
+    case *Wire:
+        t.lit = true
+    case *MemCell:
+        t.state = !t.state
+    }
+    return []point{p}
+}
+// ------------
+
+/* Flash */
+type Flash struct {
+    used bool
+    dir Direction
+}
+
+// Same as memcell
+func (f Flash) ForcedUpdate() bool { return !f.used}
+
+func (Flash) Power() {}
+
+func (f Flash) Check() bool { return !f.used }
+
+func (flash *Flash) Update(grid [3][3](*Cell)) []point {
+    if(flash.used) {
+        return []point{}
+    } else { flash.used = false }
+    p := dir2point(flash.dir, point{1,1})
+    cell := grid[p.x][p.y]
+    switch t := (*cell).(type) {
+    case *Wire:
+        t.lit = true
+    case *MemCell:
+        t.state = !t.state
+    }
+    return []point{p}
+}
+// ------------
+
+/* Not */
+type Not struct {
+    dir Direction
+}
+
+// Kinda same as source
+func (Not) ForcedUpdate() bool { return true }
+
+// It should work ONLY when it's not updated, so if it's not updated it probably doesn't have signal
+func (Not) Check() bool { return true }
+
+func (Not) Power() {}
+
+func (not *Not) Update(grid [3][3](*Cell)) []point {
+    // p1 -[NOT]-> p2
+    p1 := dir2point(rotateDir(not.dir, BACK), point{1, 1})
+    p2 := dir2point(not.dir, point{1, 1})
+
+    b1 := grid[p1.x][p1.y]
+    b2 := grid[p2.x][p2.y]
+    enabled := true
+    switch t := (*b1).(type) {
+    case *Wire:
+        enabled = !t.lit
+    case *Source:
+        enabled = false
+    case *MemCell:
+        enabled = !t.state
+    }
+    if(enabled) {
+        (*b2).Power()
+    }
+    return []point{p2}
+}
+// ------------
+
+/* Xor */
+type Xor struct {
+    dir Direction
+}
+
+// When it's not updated probably it doesn't have signal
+func (Xor) Check() bool { return false }
+
+func (Xor) Power() {}
+
+func (Xor) ForcedUpdate() bool { return false }
+func (xor *Xor) Update(grid [3][3](*Cell)) []point {
+    p1 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
+    p2 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
+    rp := dir2point(xor.dir, point{1, 1})
+    b1 := grid[p1.x][p1.y]
+    b2 := grid[p2.x][p2.y]
+    rb := grid[rp.x][rp.y]
+    if((*b1).Check() != (*b2).Check()) {
+        (*rb).Power()
+    }
+    return []point{rp}
+}
+// ------------
+
+/* And */
+type And struct {
+    dir Direction
+}
+
+// Same as xor
+func (And) Check() bool { return false }
+
+func (And) Power() {}
+func (And) ForcedUpdate() bool { return false }
+func (and *And) Update(grid [3][3](*Cell)) []point {
+    p1 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
+    p2 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
+    rp := dir2point(and.dir, point{1, 1})
+    b1 := grid[p1.x][p1.y]
+    b2 := grid[p2.x][p2.y]
+    rb := grid[rp.x][rp.y]
+    if((*b1).Check() && (*b2).Check()) {
+        (*rb).Power()
+    }
+    return []point{rp}
+}
+// ------------
+
+/* Block */
+type Block struct {
+    dir Direction
+}
+
+func (Block) Check() bool { return false }
+func (Block) Power() {}
+func (Block) ForcedUpdate() bool { return false }
+func (block *Block) Update(grid [3][3](*Cell)) []point {
     // TODO
-    _ = p
     return []point{}
 }
 // ------------
+
+/* Get */
+type Get struct {
+    dir Direction
+    state bool
+}
+func (g Get) Check() bool { return g.state }
+func (Get) Power() {}
+
+// It won't be loaded directly so i Update it forced
+func (Get) ForcedUpdate() bool { return true }
+
+func (get *Get) Update(grid [3][3](*Cell)) []point {
+    // TODO
+    return []point{}
+}
+// ------------
+
+// TODO More types (i guess)

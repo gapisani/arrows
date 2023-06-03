@@ -5,13 +5,16 @@ type point struct {
     x, y uint
 }
 
+
 // (1,1) -> center
 // (0,0) (1,0) (2,0)
 // (0,1) (1,1) (2,1)
 // (0,2) (1,2) (2,2)
+
+// Converts direction to point(or vector)
 func dir2point(dir Direction, p point) point {
     switch dir {
-    case NORD:
+    case NORTH:
         return point{p.x, p.y-1}
     case WEST:
         return point{p.x-1, p.y}
@@ -23,6 +26,7 @@ func dir2point(dir Direction, p point) point {
     return point{}
 }
 
+// Rotates direction
 func rotateDir(dir Direction, ldir LDirection) Direction {
     switch ldir {
     case RIGHT:
