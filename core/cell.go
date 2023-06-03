@@ -16,6 +16,7 @@ type LDirection uint
 const (
     RIGHT LDirection = iota
     LEFT
+    BACK
 )
 
 type Cell interface {

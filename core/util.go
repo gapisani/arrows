@@ -29,6 +29,8 @@ func rotateDir(dir Direction, ldir LDirection) Direction {
         dir = (dir + 1) % 4
     case LEFT:
         dir = (dir + 3) % 4
+    case BACK:
+        dir = (dir + 2) % 4
     }
     return dir
 }
