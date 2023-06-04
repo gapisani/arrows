@@ -49,8 +49,8 @@ func (grid *Grid) Update() {
             i = 0
             j++
         }
-        for _, p := range((*cell).Update(g)) {
-            newUpdate = append(newUpdate, p)
+        for _, rp := range((*cell).Update(g)) {
+            newUpdate = append(newUpdate, point{rp.x+p.x, rp.y+p.y})
         }
     }
     grid.updatePoints = newUpdate
