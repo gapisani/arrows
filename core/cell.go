@@ -242,8 +242,20 @@ func (Block) Check() bool { return false }
 func (Block) Power() {}
 func (Block) ForcedUpdate() bool { return false }
 func (block *Block) Update(grid [3][3](*Cell)) []point {
-    // TODO
-    return []point{}
+    //  p1 -[block]?-> p2
+    p1 := dir2point(rotateDir(block.dir, BACK), point{1,1})
+    p2 := dir2point(block.dir, point{1,1})
+    b1 := grid[p1.x][p1.y]
+    b2 := grid[p2.x][p2.y]
+    if((*b1).Check()) {
+        switch t := (*b2).(type) {
+        case *Wire:
+            t.lit = false
+        case *MemCell:
+            t.state = false
+        }
+    }
+    return []point{p2}
 }
 // ------------
 
@@ -255,12 +267,18 @@ type Get struct {
 func (g Get) Check() bool { return g.state }
 func (Get) Power() {}
 
-// It won't be loaded directly so i Update it forced
+// It won't be loaded directly so I'll update it forced
 func (Get) ForcedUpdate() bool { return true }
 
 func (get *Get) Update(grid [3][3](*Cell)) []point {
-    // TODO
-    return []point{}
+    p1 := dir2point(rotateDir(get.dir, BACK), point{1, 1})
+    p2 := dir2point(get.dir, point{1, 1})
+    b1 := grid[p1.x][p1.y]
+    b2 := grid[p2.x][p2.y]
+    if((*b1).Check()) {
+        (*b2).Power()
+    }
+    return []point{p2}
 }
 // ------------
 
