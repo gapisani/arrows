@@ -33,3 +33,4 @@ vendor/
 go.work
 
 .nvimlog
+.vim
