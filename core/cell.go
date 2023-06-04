@@ -126,7 +126,7 @@ type Flash struct {
 }
 
 // Same as memcell
-func (f Flash) ForcedUpdate() bool { return !f.used}
+func (f Flash) forcedUpdate() bool { return !f.used}
 
 func (Flash) Power() {}
 
@@ -154,7 +154,7 @@ type Not struct {
 }
 
 // Kinda same as source
-func (Not) ForcedUpdate() bool { return true }
+func (Not) forcedUpdate() bool { return true }
 
 // It should work ONLY when it's not updated, so if it's not updated it probably doesn't have signal
 func (Not) Check() bool { return true }
@@ -194,7 +194,7 @@ func (Xor) Check() bool { return false }
 
 func (Xor) Power() {}
 
-func (Xor) ForcedUpdate() bool { return false }
+func (Xor) forcedUpdate() bool { return false }
 func (xor *Xor) Update(grid [3][3](*Cell)) []point {
     p1 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
     p2 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
@@ -218,7 +218,7 @@ type And struct {
 func (And) Check() bool { return false }
 
 func (And) Power() {}
-func (And) ForcedUpdate() bool { return false }
+func (And) forcedUpdate() bool { return false }
 func (and *And) Update(grid [3][3](*Cell)) []point {
     p1 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
     p2 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
@@ -240,7 +240,7 @@ type Block struct {
 
 func (Block) Check() bool { return false }
 func (Block) Power() {}
-func (Block) ForcedUpdate() bool { return false }
+func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid [3][3](*Cell)) []point {
     //  p1 -[block]?-> p2
     p1 := dir2point(rotateDir(block.dir, BACK), point{1,1})
@@ -268,7 +268,7 @@ func (g Get) Check() bool { return g.state }
 func (Get) Power() {}
 
 // It won't be loaded directly so I'll update it forced
-func (Get) ForcedUpdate() bool { return true }
+func (Get) forcedUpdate() bool { return true }
 
 func (get *Get) Update(grid [3][3](*Cell)) []point {
     p1 := dir2point(rotateDir(get.dir, BACK), point{1, 1})
