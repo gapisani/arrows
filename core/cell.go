@@ -37,7 +37,6 @@ func (None) Power() {}
 func (None) Check() bool { return false }
 // ------------
 
-
 /* Wire */
 type Wire struct {
     dir Direction

@@ -116,6 +116,23 @@ func main() {
         return []uint{width, height}
     }))
 
+    // Constants
+    js.Global().Set("AND", uint(And))
+    js.Global().Set("BLOCK", uint(Block))
+    js.Global().Set("FLASH", uint(Flash))
+    js.Global().Set("GET", uint(Get))
+    js.Global().Set("MEM_CELL", uint(MemCell))
+    js.Global().Set("NONE", uint(None))
+    js.Global().Set("NOT", uint(Not))
+    js.Global().Set("SOURCE", uint(Source))
+    js.Global().Set("UNKNOWN", uint(Unknown))
+    js.Global().Set("WIRE", uint(Wire))
+    js.Global().Set("XOR", uint(Xor))
+
+    js.Global().Set("NORTH", uint(core.NORTH))
+    js.Global().Set("EAST", uint(core.EAST))
+    js.Global().Set("WEST", uint(core.WEST))
+    js.Global().Set("SOUTH", uint(core.SOUTH))
 
     // Don't quit from main
     ch := make(chan int)

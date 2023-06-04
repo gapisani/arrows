@@ -6,9 +6,9 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	g := core.Grid{}
-	g.Init(10, 10)
-	*g.GetCell(5, 5) = core.Cell(core.Source{})
-	*g.GetCell(6, 5) = core.Cell(core.Wire{})
-	g.Update()
+    g := core.Grid{}
+    g.Init(10, 10)
+    *g.GetCell(5, 5) = core.Cell(&core.Source{})
+    *g.GetCell(6, 5) = core.Cell(&core.Wire{})
+    g.Update()
 }
