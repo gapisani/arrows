@@ -65,6 +65,35 @@ func (w *Wire) Update(grid [3][3](*Cell)) []point {
 }
 // ------------
 
+//Cross Wire    ==================== @dikiy_opezdal's exam code ^_^ ====================
+type Cross struct {
+    lit bool
+    dir Direction
+}
+
+func (Cross) forcedUpdate() bool { return false }
+func (c *Cross) Power() { c.lit = true }
+func (c Cross) Check() bool { return c.lit }
+func (c *Cross) Update(grid [3][3](*Cell)) []point {
+    if(c.lit) {
+        p := dir2point(rotateDir(c.dir, LEFT), point{1,1})
+        cell := grid[p.x][p.y]
+        (*cell).Power()
+
+        p = dir2point(c.dir, point{1,1})
+        cell = grid[p.x][p.y]
+        (*cell).Power()
+
+        p = dir2point(rotateDir(c.dir, RIGHT), point{1,1})
+        cell = grid[p.x][p.y]
+        (*cell).Power()
+
+        return []point{p}
+    }
+    return []point{}
+}
+// ------------      ==================== @dikiy_opezdal's exam code ^_^ ====================
+
 /* Source */
 type Source struct {
     dir Direction
