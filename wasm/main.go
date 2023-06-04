@@ -85,9 +85,9 @@ func type2cell(cellType CellType) core.Cell {
 
 func cell2js(cell core.Cell) js.Value {
     return js.ValueOf(map[string]interface{}{
-        "stringType": reflect.TypeOf(cell),
+        "stringType": reflect.TypeOf(cell).String(),
         "powered": cell.Check(),
-        "type": cell2type(cell),
+        "type": uint(cell2type(cell)),
     })
 }
 
