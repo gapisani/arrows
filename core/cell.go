@@ -75,20 +75,15 @@ type FrwdLeft struct {
     dir Direction
 }
 
+
 func (a FrwdLeft) Dir() Direction { return a.dir }
 
-func (fd FrwdLeft) Check() bool {
-    return fd.lit
-}
+func (fd FrwdLeft) Check() bool { return fd.lit }
 
-func (fd *FrwdLeft) Power() {
-    fd.lit = true
-}
+func (fd *FrwdLeft) Power() { fd.lit = true }
 
 // Doesn't forces updates on other cells
-func (FrwdLeft) forcedUpdate() bool {
-    return false
-}
+func (FrwdLeft) forcedUpdate() bool { return false }
 
 // Pass signal to a cell that it faced with, as well as on the left side
 //[.][O][.] X - arrow; I - input; O - output
@@ -96,15 +91,13 @@ func (FrwdLeft) forcedUpdate() bool {
 //[.][I][.]
 func (fd *FrwdLeft) Update(grid [3][3](*Cell)) []point {
     if(!fd.lit) { return []point{} }
-    p := dir2point(rotateDir(fd.dir, LEFT), point{1,1})
-    cell := grid[p.x][p.y]
+    p1 := dir2point(rotateDir(fd.dir, LEFT), point{1,1})
+    cell := grid[p1.x][p1.y]
     (*cell).Power()
-    p = dir2point(fd.dir, point{1,1})
-    cell = grid[p.x][p.y]
+    p2 := dir2point(fd.dir, point{1,1})
+    cell = grid[p2.x][p2.y]
     (*cell).Power()
-
-    // FIXME: Same as cross
-    return []point{p}
+    return []point{p1, p2}
 }
 // ------------
 
@@ -136,15 +129,13 @@ func (FrwdRight) forcedUpdate() bool {
 //[.][I][.]
 func (fr *FrwdRight) Update(grid [3][3](*Cell)) []point {
     if(!fr.lit) { return []point{} }
-    p := dir2point(fr.dir, point{1,1})
-    cell := grid[p.x][p.y]
+    p1 := dir2point(fr.dir, point{1,1})
+    cell := grid[p1.x][p1.y]
     (*cell).Power()
-    p = dir2point(rotateDir(fr.dir, RIGHT), point{1,1})
-    cell = grid[p.x][p.y]
+    p2 := dir2point(rotateDir(fr.dir, RIGHT), point{1,1})
+    cell = grid[p2.x][p2.y]
     (*cell).Power()
-
-    // FIXME: same as cross
-    return []point{p}
+    return []point{p1, p2}
 }
 // ------------
 
@@ -153,6 +144,7 @@ type Cross struct {
     lit bool
     dir Direction
 }
+
 
 func (c Cross) Check() bool {
     return c.lit
@@ -175,18 +167,16 @@ func (Cross) forcedUpdate() bool {
 //[.][I][.]
 func (c *Cross) Update(grid [3][3](*Cell)) []point {
     if(!c.lit) { return []point{} }
-    p := dir2point(rotateDir(c.dir, LEFT), point{1,1})
-    cell := grid[p.x][p.y]
+    p1 := dir2point(rotateDir(c.dir, LEFT), point{1,1})
+    cell := grid[p1.x][p1.y]
     (*cell).Power()
-    p = dir2point(c.dir, point{1,1})
-    cell = grid[p.x][p.y]
+    p2 := dir2point(c.dir, point{1,1})
+    cell = grid[p2.x][p2.y]
     (*cell).Power()
-    p = dir2point(rotateDir(c.dir, RIGHT), point{1,1})
-    cell = grid[p.x][p.y]
+    p3 := dir2point(rotateDir(c.dir, RIGHT), point{1,1})
+    cell = grid[p3.x][p3.y]
     (*cell).Power()
-
-    // FIXME: Must update 3 cells, not just one
-    return []point{p}
+    return []point{p1, p2, p3}
 }
 // ------------
 
@@ -196,20 +186,15 @@ type Angled struct {
     dir Direction
 }
 
-func (a Angled) Check() bool {
-    return a.lit
-}
 
-func (a *Angled) Power() {
-    a.lit = true
-}
+func (a Angled) Check() bool { return a.lit }
+
+func (a *Angled) Power() { a.lit = true }
 
 func (a Angled) Dir() Direction { return a.dir }
 
 // Doesn't forces updates on other cells
-func (Angled) forcedUpdate() bool {
-    return false
-}
+func (Angled) forcedUpdate() bool { return false }
 
 // Pass signal to a cell on the top left relatively of the that it faced
 //[O][.][.] X - arrow; I - input; O - output
