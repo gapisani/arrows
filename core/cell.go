@@ -64,34 +64,146 @@ func (w *Wire) Update(grid [3][3](*Cell)) []point {
 }
 // ------------
 
-//Cross Wire    ==================== @dikiy_opezdal's exam code ^_^ ====================
+/* Forward-Left Wire */
+type FrwdLeft struct {
+    lit bool
+    dir Direction
+}
+
+func (fd FrwdLeft) Check() bool {
+    return fd.lit
+}
+
+func (fd *FrwdLeft) Power() {
+    fd.lit = true
+}
+
+// Doesn't forces updates on other cells
+func (FrwdLeft) forcedUpdate() bool {
+    return false
+}
+
+// Pass signal to a cell that it faced with, as well as on the left side
+//[.][O][.] X - arrow; I - input; O - output
+//[O][X][.]
+//[.][I][.]
+func (fd *FrwdLeft) Update(grid [3][3](*Cell)) []point {
+    if(!fd.lit) { return []point{} }
+    p := dir2point(rotateDir(fd.dir, LEFT), point{1,1})
+    cell := grid[p.x][p.y]
+    (*cell).Power()
+    p = dir2point(fd.dir, point{1,1})
+    cell = grid[p.x][p.y]
+    (*cell).Power()
+    return []point{p}
+}
+// ------------
+
+/* Forward-Right Wire */
+type FrwdRight struct {
+    lit bool
+    dir Direction
+}
+
+func (fr FrwdRight) Check() bool {
+    return fr.lit
+}
+
+func (fr *FrwdRight) Power() {
+    fr.lit = true
+}
+
+// Doesn't forces updates on other cells
+func (FrwdRight) forcedUpdate() bool {
+    return false
+}
+
+// Pass signal to a cell that it faced with, as well as on the right side
+//[.][O][.] X - arrow; I - input; O - output
+//[.][X][O]
+//[.][I][.]
+func (fr *FrwdRight) Update(grid [3][3](*Cell)) []point {
+    if(!fr.lit) { return []point{} }
+    p := dir2point(fr.dir, point{1,1})
+    cell := grid[p.x][p.y]
+    (*cell).Power()
+    p = dir2point(rotateDir(fr.dir, RIGHT), point{1,1})
+    cell = grid[p.x][p.y]
+    (*cell).Power()
+    return []point{p}
+}
+// ------------
+
+/* Cross Wire */
 type Cross struct {
     lit bool
     dir Direction
 }
 
-func (Cross) forcedUpdate() bool { return false }
-func (c *Cross) Power() { c.lit = true }
-func (c Cross) Check() bool { return c.lit }
-func (c *Cross) Update(grid [3][3](*Cell)) []point {
-    if(c.lit) {
-        p := dir2point(rotateDir(c.dir, LEFT), point{1,1})
-        cell := grid[p.x][p.y]
-        (*cell).Power()
-
-        p = dir2point(c.dir, point{1,1})
-        cell = grid[p.x][p.y]
-        (*cell).Power()
-
-        p = dir2point(rotateDir(c.dir, RIGHT), point{1,1})
-        cell = grid[p.x][p.y]
-        (*cell).Power()
-
-        return []point{p}
-    }
-    return []point{}
+func (c Cross) Check() bool {
+    return c.lit
 }
-// ------------      ==================== @dikiy_opezdal's exam code ^_^ ====================
+
+func (c *Cross) Power() {
+    c.lit = true
+}
+
+// Doesn't forces updates on other cells
+func (Cross) forcedUpdate() bool {
+    return false
+}
+
+// Pass signal to a cell that it faced with, as well as on the left and right side
+//[.][O][.] X - arrow; I - input; O - output
+//[O][X][O]
+//[.][I][.]
+func (c *Cross) Update(grid [3][3](*Cell)) []point {
+    if(!c.lit) { return []point{} }
+    p := dir2point(rotateDir(c.dir, LEFT), point{1,1})
+    cell := grid[p.x][p.y]
+    (*cell).Power()
+    p = dir2point(c.dir, point{1,1})
+    cell = grid[p.x][p.y]
+    (*cell).Power()
+    p = dir2point(rotateDir(c.dir, RIGHT), point{1,1})
+    cell = grid[p.x][p.y]
+    (*cell).Power()
+    return []point{p}
+}
+// ------------
+
+/* Angled Wire */
+type Angled struct {
+    lit bool
+    dir Direction
+}
+
+func (a Angled) Check() bool {
+    return a.lit
+}
+
+func (a *Angled) Power() {
+    a.lit = true
+}
+
+// Doesn't forces updates on other cells
+func (Angled) forcedUpdate() bool {
+    return false
+}
+
+// Pass signal to a cell on the top left relatively of the that it faced
+//[O][.][.] X - arrow; I - input; O - output
+//[.][X][.]
+//[.][I][I]
+//P.S. IDK where input is
+func (a *Angled) Update(grid [3][3](*Cell)) []point {
+    if(!a.lit) { return []point{} }
+    p := dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, point{1,1}))
+    cell := grid[p.x][p.y]
+    (*cell).Power()
+    return []point{p}
+}
+// ------------
 
 /* Source */
 type Source struct {

@@ -16,8 +16,12 @@ type CellType uint
 const (
     None CellType = iota
     And
+    Angled
     Block
+    Cross
     Flash
+    FrwdLeft
+    FrwdRight
     Get
     MemCell
     Not
@@ -32,10 +36,18 @@ func cell2type(cell core.Cell) CellType {
     switch cell.(type) {
     case *core.And:
         return And
+    case *core.Angled:
+        return Angled
     case *core.Block:
         return Block
+    case *core.Cross:
+        return Cross
     case *core.Flash:
         return Flash
+    case *core.FrwdLeft:
+        return FrwdLeft
+    case *core.FrwdRight:
+        return FrwdRight
     case *core.Get:
         return Get
     case *core.MemCell:
@@ -59,10 +71,18 @@ func type2cell(cellType CellType) core.Cell {
     switch cellType {
     case And:
         return &core.And{}
+    case Angled:
+        return &core.Angled{}
     case Block:
         return &core.Block{}
+    case Cross:
+        return &core.Cross{}
     case Flash:
         return &core.Flash{}
+    case FrwdLeft:
+        return &core.FrwdLeft{}
+    case FrwdRight:
+        return &core.FrwdRight{}
     case Get:
         return &core.Get{}
     case MemCell:
@@ -118,8 +138,12 @@ func main() {
 
     // Constants
     js.Global().Set("AND", uint(And))
+    js.Global().Set("ANGLED", uint(Angled))
     js.Global().Set("BLOCK", uint(Block))
+    js.Global().Set("CROSS", uint(Cross))
     js.Global().Set("FLASH", uint(Flash))
+    js.Global().Set("FRWDLEFT", uint(FrwdLeft))
+    js.Global().Set("FRWDRIGHT", uint(FrwdRight))
     js.Global().Set("GET", uint(Get))
     js.Global().Set("MEM_CELL", uint(MemCell))
     js.Global().Set("NONE", uint(None))
