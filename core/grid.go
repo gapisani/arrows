@@ -42,6 +42,7 @@ func (grid *Grid) Update() {
         cell := grid.GetCell(p.x, p.y)
 
         // Passing grid 3x3 around cell to Update method
+        // TODO: 5x5?
         var g [3][3](*Cell)
         var i, j uint = 0, 0
         for x := p.x-1; x <= p.x+1; x++ {
@@ -53,8 +54,9 @@ func (grid *Grid) Update() {
             i = 0
             j++
         }
-        for _, rp := range((*cell).Update(g)) {
-            newUpdate = append(newUpdate, point{rp.x+p.x-3, rp.y+p.y-3})
+        points := (*cell).Update(g)
+        for _, rp := range(points) {
+            newUpdate = append(newUpdate, point{rp.x+p.x-1, rp.y+p.y-1})
         }
     }
     grid.updatePoints = newUpdate

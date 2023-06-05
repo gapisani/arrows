@@ -65,6 +65,7 @@ func (w *Wire) Update(grid [3][3](*Cell)) []point {
     p := dir2point(w.dir, point{1,1})
     cell := grid[p.x][p.y]
     (*cell).Power()
+    w.lit = false
     return []point{p}
 }
 // ------------

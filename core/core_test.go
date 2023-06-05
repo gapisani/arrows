@@ -25,8 +25,7 @@ func render(g core.Grid) {
     for x := uint(0); x < w; x++ {
         for y := uint(0); y < h; y++ {
             cell := g.GetCell(x, y)
-            //dir := cell.Dir()
-            dir := core.NORTH
+            dir := (*cell).Dir()
             lit := (*cell).Check()
             switch (*cell).(type) {
             case *core.Wire:
