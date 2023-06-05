@@ -20,6 +20,7 @@ type Cell interface {
     Update(grid [3][3](*Cell)) []point
     Check() bool
     Power()
+    Dir() Direction
 }
 
 /* Empty cell */
@@ -33,6 +34,8 @@ func (None) forcedUpdate() bool {
     return false
 }
 
+func (None) Dir() Direction { return NORTH }
+
 func (None) Power() {}
 func (None) Check() bool { return false }
 // ------------
@@ -42,6 +45,8 @@ type Wire struct {
     dir Direction
     lit bool
 }
+
+func (a Wire) Dir() Direction { return a.dir }
 
 func (w Wire) Check() bool { return w.lit }
 
@@ -70,6 +75,8 @@ type FrwdLeft struct {
     dir Direction
 }
 
+func (a FrwdLeft) Dir() Direction { return a.dir }
+
 func (fd FrwdLeft) Check() bool {
     return fd.lit
 }
@@ -95,6 +102,8 @@ func (fd *FrwdLeft) Update(grid [3][3](*Cell)) []point {
     p = dir2point(fd.dir, point{1,1})
     cell = grid[p.x][p.y]
     (*cell).Power()
+
+    // FIXME: Same as cross
     return []point{p}
 }
 // ------------
@@ -104,6 +113,9 @@ type FrwdRight struct {
     lit bool
     dir Direction
 }
+
+
+func (a FrwdRight) Dir() Direction { return a.dir }
 
 func (fr FrwdRight) Check() bool {
     return fr.lit
@@ -130,6 +142,8 @@ func (fr *FrwdRight) Update(grid [3][3](*Cell)) []point {
     p = dir2point(rotateDir(fr.dir, RIGHT), point{1,1})
     cell = grid[p.x][p.y]
     (*cell).Power()
+
+    // FIXME: same as cross
     return []point{p}
 }
 // ------------
@@ -147,6 +161,8 @@ func (c Cross) Check() bool {
 func (c *Cross) Power() {
     c.lit = true
 }
+
+func (a Cross) Dir() Direction { return a.dir }
 
 // Doesn't forces updates on other cells
 func (Cross) forcedUpdate() bool {
@@ -168,6 +184,8 @@ func (c *Cross) Update(grid [3][3](*Cell)) []point {
     p = dir2point(rotateDir(c.dir, RIGHT), point{1,1})
     cell = grid[p.x][p.y]
     (*cell).Power()
+
+    // FIXME: Must update 3 cells, not just one
     return []point{p}
 }
 // ------------
@@ -185,6 +203,8 @@ func (a Angled) Check() bool {
 func (a *Angled) Power() {
     a.lit = true
 }
+
+func (a Angled) Dir() Direction { return a.dir }
 
 // Doesn't forces updates on other cells
 func (Angled) forcedUpdate() bool {
@@ -210,6 +230,8 @@ type Source struct {
     dir Direction
 }
 
+func (a Source) Dir() Direction { return a.dir }
+
 func (Source) Check() bool { return true }
 
 func (Source) Power() {}
@@ -233,6 +255,8 @@ type MemCell struct {
     state bool    // State -> On/Off
 }
 
+func (a MemCell) Dir() Direction { return a.dir }
+
 func (mc MemCell) Check() bool { return mc.state }
 
 // Depends, it could work as source
@@ -249,12 +273,7 @@ func (mc *MemCell) Update(grid [3][3](*Cell)) []point {
     if(!mc.state) {return []point{}}
     p := dir2point(mc.dir, point{1, 1})
     cell := grid[p.x][p.y]
-    switch t := (*cell).(type) {
-    case *Wire:
-        t.lit = true
-    case *MemCell:
-        t.state = !t.state
-    }
+    (*cell).Power()
     return []point{p}
 }
 // ------------
@@ -270,6 +289,8 @@ func (f Flash) forcedUpdate() bool { return !f.used}
 
 func (Flash) Power() {}
 
+func (a Flash) Dir() Direction { return a.dir }
+
 func (f Flash) Check() bool { return !f.used }
 
 func (flash *Flash) Update(grid [3][3](*Cell)) []point {
@@ -278,12 +299,7 @@ func (flash *Flash) Update(grid [3][3](*Cell)) []point {
     } else { flash.used = false }
     p := dir2point(flash.dir, point{1,1})
     cell := grid[p.x][p.y]
-    switch t := (*cell).(type) {
-    case *Wire:
-        t.lit = true
-    case *MemCell:
-        t.state = !t.state
-    }
+    (*cell).Power()
     return []point{p}
 }
 // ------------
@@ -293,8 +309,12 @@ type Not struct {
     dir Direction
 }
 
+func (a Not) Dir() Direction { return a.dir }
+
 // Kinda same as source
 func (Not) forcedUpdate() bool { return true }
+
+// FIXME: ^ it's always updated, so there is some logic issue may-be?
 
 // It should work ONLY when it's not updated, so if it's not updated it probably doesn't have signal
 func (Not) Check() bool { return true }
@@ -308,16 +328,7 @@ func (not *Not) Update(grid [3][3](*Cell)) []point {
 
     b1 := grid[p1.x][p1.y]
     b2 := grid[p2.x][p2.y]
-    enabled := true
-    switch t := (*b1).(type) {
-    case *Wire:
-        enabled = !t.lit
-    case *Source:
-        enabled = false
-    case *MemCell:
-        enabled = !t.state
-    }
-    if(enabled) {
+    if(!(*b1).Check()) {
         (*b2).Power()
     }
     return []point{p2}
@@ -328,6 +339,8 @@ func (not *Not) Update(grid [3][3](*Cell)) []point {
 type Xor struct {
     dir Direction
 }
+
+func (a Xor) Dir() Direction { return a.dir }
 
 // When it's not updated probably it doesn't have signal
 func (Xor) Check() bool { return false }
@@ -357,6 +370,8 @@ type And struct {
 // Same as xor
 func (And) Check() bool { return false }
 
+func (a And) Dir() Direction { return a.dir }
+
 func (And) Power() {}
 func (And) forcedUpdate() bool { return false }
 func (and *And) Update(grid [3][3](*Cell)) []point {
@@ -377,6 +392,8 @@ func (and *And) Update(grid [3][3](*Cell)) []point {
 type Block struct {
     dir Direction
 }
+
+func (a Block) Dir() Direction { return a.dir }
 
 func (Block) Check() bool { return false }
 func (Block) Power() {}
@@ -404,6 +421,7 @@ type Get struct {
     dir Direction
     state bool
 }
+func (a Get) Dir() Direction { return a.dir }
 func (g Get) Check() bool { return g.state }
 func (Get) Power() {}
 

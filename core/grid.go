@@ -10,6 +10,10 @@ type Grid struct {
     updatePoints []point
 }
 
+func (grid Grid) Dimensions() (uint, uint) {
+    return grid.width, grid.height
+}
+
 func (grid *Grid) Init(w, h uint) {
     grid.width  = w
     grid.height = h
@@ -50,7 +54,7 @@ func (grid *Grid) Update() {
             j++
         }
         for _, rp := range((*cell).Update(g)) {
-            newUpdate = append(newUpdate, point{rp.x+p.x, rp.y+p.y})
+            newUpdate = append(newUpdate, point{rp.x+p.x-3, rp.y+p.y-3})
         }
     }
     grid.updatePoints = newUpdate
