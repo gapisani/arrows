@@ -21,6 +21,7 @@ type Cell interface {
     Check() bool
     Power()
     Dir() Direction
+    SetDir(Direction) 
 }
 
 /* Empty cell */
@@ -35,6 +36,7 @@ func (None) forcedUpdate() bool {
 }
 
 func (None) Dir() Direction { return NORTH }
+func (None) SetDir(dir Direction) { }
 
 func (None) Power() {}
 func (None) Check() bool { return false }
@@ -47,6 +49,7 @@ type Wire struct {
 }
 
 func (a Wire) Dir() Direction { return a.dir }
+func (a *Wire) SetDir(dir Direction) { a.dir = dir }
 
 func (w Wire) Check() bool { return w.lit }
 
@@ -79,6 +82,8 @@ type FrwdLeft struct {
 
 func (a FrwdLeft) Dir() Direction { return a.dir }
 
+func (a *FrwdLeft) SetDir(dir Direction) { a.dir = dir }
+
 func (fd FrwdLeft) Check() bool { return fd.lit }
 
 func (fd *FrwdLeft) Power() { fd.lit = true }
@@ -110,6 +115,8 @@ type FrwdRight struct {
 
 
 func (a FrwdRight) Dir() Direction { return a.dir }
+
+func (a *FrwdRight) SetDir(dir Direction) { a.dir = dir }
 
 func (fr FrwdRight) Check() bool {
     return fr.lit
@@ -157,6 +164,8 @@ func (c *Cross) Power() {
 
 func (a Cross) Dir() Direction { return a.dir }
 
+func (a *Cross) SetDir(dir Direction) { a.dir = dir }
+
 // Doesn't forces updates on other cells
 func (Cross) forcedUpdate() bool {
     return false
@@ -194,6 +203,8 @@ func (a *Angled) Power() { a.lit = true }
 
 func (a Angled) Dir() Direction { return a.dir }
 
+func (a *Angled) SetDir(dir Direction) { a.dir = dir }
+
 // Doesn't forces updates on other cells
 func (Angled) forcedUpdate() bool { return false }
 
@@ -217,6 +228,8 @@ type Source struct {
 }
 
 func (a Source) Dir() Direction { return a.dir }
+
+func (a *Source) SetDir(dir Direction) { a.dir = dir }
 
 func (Source) Check() bool { return true }
 
@@ -242,6 +255,8 @@ type MemCell struct {
 }
 
 func (a MemCell) Dir() Direction { return a.dir }
+
+func (a *MemCell) SetDir(dir Direction) { a.dir = dir }
 
 func (mc MemCell) Check() bool { return mc.state }
 
@@ -277,12 +292,14 @@ func (Flash) Power() {}
 
 func (a Flash) Dir() Direction { return a.dir }
 
+func (a *Flash) SetDir(dir Direction) { a.dir = dir }
+
 func (f Flash) Check() bool { return !f.used }
 
 func (flash *Flash) Update(grid [3][3](*Cell)) []point {
     if(flash.used) {
         return []point{}
-    } else { flash.used = false }
+    } else { flash.used = true }
     p := dir2point(flash.dir, point{1,1})
     cell := grid[p.x][p.y]
     (*cell).Power()
@@ -296,6 +313,8 @@ type Not struct {
 }
 
 func (a Not) Dir() Direction { return a.dir }
+
+func (a *Not) SetDir(dir Direction) { a.dir = dir }
 
 // Kinda same as source
 func (Not) forcedUpdate() bool { return true }
@@ -328,6 +347,8 @@ type Xor struct {
 
 func (a Xor) Dir() Direction { return a.dir }
 
+func (a *Xor) SetDir(dir Direction) { a.dir = dir }
+
 // When it's not updated probably it doesn't have signal
 func (Xor) Check() bool { return false }
 
@@ -336,7 +357,7 @@ func (Xor) Power() {}
 func (Xor) forcedUpdate() bool { return false }
 func (xor *Xor) Update(grid [3][3](*Cell)) []point {
     p1 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
-    p2 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
+    p2 := dir2point(rotateDir(xor.dir, RIGHT), point{1, 1})
     rp := dir2point(xor.dir, point{1, 1})
     b1 := grid[p1.x][p1.y]
     b2 := grid[p2.x][p2.y]
@@ -358,11 +379,13 @@ func (And) Check() bool { return false }
 
 func (a And) Dir() Direction { return a.dir }
 
+func (a *And) SetDir(dir Direction) { a.dir = dir }
+
 func (And) Power() {}
 func (And) forcedUpdate() bool { return false }
 func (and *And) Update(grid [3][3](*Cell)) []point {
     p1 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
-    p2 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
+    p2 := dir2point(rotateDir(and.dir, RIGHT), point{1, 1})
     rp := dir2point(and.dir, point{1, 1})
     b1 := grid[p1.x][p1.y]
     b2 := grid[p2.x][p2.y]
@@ -380,6 +403,8 @@ type Block struct {
 }
 
 func (a Block) Dir() Direction { return a.dir }
+
+func (a *Block) SetDir(dir Direction) { a.dir = dir }
 
 func (Block) Check() bool { return false }
 func (Block) Power() {}
@@ -408,6 +433,7 @@ type Get struct {
     state bool
 }
 func (a Get) Dir() Direction { return a.dir }
+func (a *Get) SetDir(dir Direction) { a.dir = dir }
 func (g Get) Check() bool { return g.state }
 func (Get) Power() {}
 
