@@ -1,8 +1,4 @@
-github.com/gapisani/arrows v0.0.0-20230605063951-a46aec2491aa h1:xVSshBfqS7YoojAtYQT0BAoEHVEn4S0vgBk0zL2O1rw=
-github.com/gapisani/arrows v0.0.0-20230605063951-a46aec2491aa/go.mod h1:rQKxV8ZH6b2x8i0i49hmFHmzwsSSt9LIW3YXFgifw1M=
-github.com/gapisani/arrows/core v0.0.0-20230604124734-b7f51c64a162 h1:TOL8SPrWP3sH+Q54d6wFuIYl21vzOYjrwQZ+49z7tlk=
-github.com/gapisani/arrows/core v0.0.0-20230604124734-b7f51c64a162/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=
-github.com/gapisani/arrows/core v0.0.0-20230604142747-0e7cf93fa581 h1:e09r4QxI8iCi6N7F6vR6ZlZoAm2ORPu9qh8zClikIos=
-github.com/gapisani/arrows/core v0.0.0-20230604142747-0e7cf93fa581/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=
 github.com/gapisani/arrows/core v0.0.0-20230605063951-a46aec2491aa h1:0qdEXx6e2CIn3/wmSu9KByh/ZP84R47wmT/2mzN5iQk=
 github.com/gapisani/arrows/core v0.0.0-20230605063951-a46aec2491aa/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=
+github.com/gapisani/arrows/core v0.0.0-20230607154342-4b522bb66d1d h1:vWBm1qc/ZYf/5XgF0fgyznZdvUuKyfiHf2/0BZvKrHI=
+github.com/gapisani/arrows/core v0.0.0-20230607154342-4b522bb66d1d/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=

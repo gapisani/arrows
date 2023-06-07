@@ -108,6 +108,7 @@ func cell2js(cell core.Cell) js.Value {
         "stringType": reflect.TypeOf(cell).String(),
         "powered": cell.Check(),
         "type": uint(cell2type(cell)),
+        "dir": uint(cell.Dir()),
     })
 }
 
@@ -124,10 +125,11 @@ func main() {
         return cell2js(*cell)
     }))
 
-    // setCell(int x, y, cellType celltype)
+    // setCell(int x, y, cellType celltype, direction)
     js.Global().Set("setCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
         (*cell) = type2cell(CellType(args[2].Int()))
+        (*cell).SetDir(core.Direction(args[3].Int()))
         return nil
     }))
 
