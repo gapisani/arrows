@@ -1,23 +1,13 @@
 package core
 
-type Direction uint
 const (
-    NORTH Direction = iota
-    SOUTH
-    EAST
-    WEST
+    _LGRID_SIZE = 3
 )
-
-type LDirection uint
-const (
-    RIGHT LDirection = iota
-    LEFT
-    BACK
-)
+type _lgrid [_LGRID_SIZE][_LGRID_SIZE](*Cell)
 
 type Cell interface {
     forcedUpdate() bool
-    Update(grid [3][3](*Cell)) []point
+    Update(grid _lgrid) []point
     Check() bool
     Power()
     Dir() Direction
@@ -28,7 +18,7 @@ type Cell interface {
 type None struct {}
 
 // In fact, it should never be updated
-func (None) Update([3][3](*Cell)) []point { return []point{} }
+func (None) Update(_lgrid) []point { return []point{} }
 
 // Doesn't forces updates on other cells
 func (None) forcedUpdate() bool {
@@ -63,7 +53,7 @@ func (Wire) forcedUpdate() bool {
 }
 
 // Pass signal to a cell that it faced with
-func (w *Wire) Update(grid [3][3](*Cell)) []point {
+func (w *Wire) Update(grid _lgrid) []point {
     if(!w.lit) {return []point{}}
     p := dir2point(w.dir, point{1,1})
     cell := grid[p.x][p.y]
@@ -95,7 +85,7 @@ func (FrwdLeft) forcedUpdate() bool { return false }
 //[.][O][.] X - arrow; I - input; O - output
 //[O][X][.]
 //[.][I][.]
-func (fd *FrwdLeft) Update(grid [3][3](*Cell)) []point {
+func (fd *FrwdLeft) Update(grid _lgrid) []point {
     if(!fd.lit) { return []point{} }
     p1 := dir2point(rotateDir(fd.dir, LEFT), point{1,1})
     cell := grid[p1.x][p1.y]
@@ -135,7 +125,7 @@ func (FrwdRight) forcedUpdate() bool {
 //[.][O][.] X - arrow; I - input; O - output
 //[.][X][O]
 //[.][I][.]
-func (fr *FrwdRight) Update(grid [3][3](*Cell)) []point {
+func (fr *FrwdRight) Update(grid _lgrid) []point {
     if(!fr.lit) { return []point{} }
     p1 := dir2point(fr.dir, point{1,1})
     cell := grid[p1.x][p1.y]
@@ -175,7 +165,7 @@ func (Cross) forcedUpdate() bool {
 //[.][O][.] X - arrow; I - input; O - output
 //[O][X][O]
 //[.][I][.]
-func (c *Cross) Update(grid [3][3](*Cell)) []point {
+func (c *Cross) Update(grid _lgrid) []point {
     if(!c.lit) { return []point{} }
     p1 := dir2point(rotateDir(c.dir, LEFT), point{1,1})
     cell := grid[p1.x][p1.y]
@@ -213,7 +203,7 @@ func (Angled) forcedUpdate() bool { return false }
 //[.][X][.]
 //[.][I][I]
 //P.S. IDK where input is
-func (a *Angled) Update(grid [3][3](*Cell)) []point {
+func (a *Angled) Update(grid _lgrid) []point {
     if(!a.lit) { return []point{} }
     p := dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, point{1,1}))
     cell := grid[p.x][p.y]
@@ -241,7 +231,7 @@ func (Source) forcedUpdate() bool {
 }
 
 // Powers the next cell
-func (s *Source) Update(grid [3][3](*Cell)) []point {
+func (s *Source) Update(grid _lgrid) []point {
     p := dir2point(s.dir, point{1, 1})
     (*grid[p.x][p.y]).Power()
     return []point{p}
@@ -270,7 +260,7 @@ func (mc *MemCell) Power() {
 }
 
 // Works as source that can be turned off or on
-func (mc *MemCell) Update(grid [3][3](*Cell)) []point {
+func (mc *MemCell) Update(grid _lgrid) []point {
     if(!mc.state) {return []point{}}
     p := dir2point(mc.dir, point{1, 1})
     cell := grid[p.x][p.y]
@@ -296,7 +286,7 @@ func (a *Flash) SetDir(dir Direction) { a.dir = dir }
 
 func (f Flash) Check() bool { return !f.used }
 
-func (flash *Flash) Update(grid [3][3](*Cell)) []point {
+func (flash *Flash) Update(grid _lgrid) []point {
     if(flash.used) {
         return []point{}
     } else { flash.used = true }
@@ -326,7 +316,7 @@ func (Not) Check() bool { return true }
 
 func (Not) Power() {}
 
-func (not *Not) Update(grid [3][3](*Cell)) []point {
+func (not *Not) Update(grid _lgrid) []point {
     // p1 -[NOT]-> p2
     p1 := dir2point(rotateDir(not.dir, BACK), point{1, 1})
     p2 := dir2point(not.dir, point{1, 1})
@@ -355,7 +345,7 @@ func (Xor) Check() bool { return false }
 func (Xor) Power() {}
 
 func (Xor) forcedUpdate() bool { return false }
-func (xor *Xor) Update(grid [3][3](*Cell)) []point {
+func (xor *Xor) Update(grid _lgrid) []point {
     p1 := dir2point(rotateDir(xor.dir, LEFT), point{1, 1})
     p2 := dir2point(rotateDir(xor.dir, RIGHT), point{1, 1})
     rp := dir2point(xor.dir, point{1, 1})
@@ -383,7 +373,7 @@ func (a *And) SetDir(dir Direction) { a.dir = dir }
 
 func (And) Power() {}
 func (And) forcedUpdate() bool { return false }
-func (and *And) Update(grid [3][3](*Cell)) []point {
+func (and *And) Update(grid _lgrid) []point {
     p1 := dir2point(rotateDir(and.dir, LEFT), point{1, 1})
     p2 := dir2point(rotateDir(and.dir, RIGHT), point{1, 1})
     rp := dir2point(and.dir, point{1, 1})
@@ -409,7 +399,7 @@ func (a *Block) SetDir(dir Direction) { a.dir = dir }
 func (Block) Check() bool { return false }
 func (Block) Power() {}
 func (Block) forcedUpdate() bool { return false }
-func (block *Block) Update(grid [3][3](*Cell)) []point {
+func (block *Block) Update(grid _lgrid) []point {
     //  p1 -[block]?-> p2
     p1 := dir2point(rotateDir(block.dir, BACK), point{1,1})
     p2 := dir2point(block.dir, point{1,1})
@@ -440,7 +430,7 @@ func (Get) Power() {}
 // It won't be loaded directly so I'll update it forced
 func (Get) forcedUpdate() bool { return true }
 
-func (get *Get) Update(grid [3][3](*Cell)) []point {
+func (get *Get) Update(grid _lgrid) []point {
     p1 := dir2point(rotateDir(get.dir, BACK), point{1, 1})
     p2 := dir2point(get.dir, point{1, 1})
     b1 := grid[p1.x][p1.y]

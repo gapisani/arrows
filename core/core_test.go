@@ -1,9 +1,11 @@
 package core_test
 
 import (
-	"github.com/gapisani/arrows/core"
+	"fmt"
 	"testing"
-    "fmt"
+    "time"
+
+	"github.com/gapisani/arrows/core"
 )
 
 func rotArr(arr rune, dir core.Direction) string {
@@ -38,6 +40,12 @@ func render(g core.Grid) {
                 fmt.Print("@")
             case *core.None:
                 fmt.Print(" ")
+            case *core.MemCell:
+                if(lit) {
+                    fmt.Print("#")
+                } else {
+                    fmt.Print("O")
+                }
             default:
                 fmt.Print("x")
             }
@@ -48,23 +56,21 @@ func render(g core.Grid) {
 
 func TestMain(t *testing.T) {
     g := core.Grid{}
-    g.Init(10, 10)
+    g.Init(50, 10)
     w, h := g.Dimensions()
     for y := uint(0); y < h; y++ {
         for x := uint(0); x < w; x++ {
             *g.GetCell(x, y) = core.Cell(&core.None{})
         }
     }
-    *g.GetCell(5, 5) = core.Cell(&core.Source{})
-    *g.GetCell(4, 5) = core.Cell(&core.Wire{})
-    *g.GetCell(3, 5) = core.Cell(&core.Wire{})
-    render(g)
-    g.Update()
-    render(g)
-    g.Update()
-    render(g)
-    g.Update()
-    render(g)
-    g.Update()
-    render(g)
+    *g.GetCell(w-2, 5) = core.Cell(&core.Source{})
+    for i := uint(w-3); i >= 2; i-- {
+        *g.GetCell(i, 5) = core.Cell(&core.MemCell{})
+    }
+    g.RecountUpdate()
+    for t := 0; t <= 100; t++ {
+        g.Update()
+        time.Sleep(time.Millisecond * 100)
+        render(g)
+    }
 }

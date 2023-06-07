@@ -5,6 +5,20 @@ type point struct {
     x, y uint
 }
 
+type Direction uint
+const (
+    NORTH Direction = iota
+    SOUTH
+    EAST
+    WEST
+)
+
+type LDirection uint
+const (
+    RIGHT LDirection = iota
+    LEFT
+    BACK
+)
 
 // (1,1) -> center
 // (0,0) (1,0) (2,0)

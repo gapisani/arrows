@@ -32,10 +32,7 @@ func (grid *Grid) GetCell(x, y uint) *Cell {
     return &grid.cells[index]
 }
 
-// Updates the grid
-func (grid *Grid) Update() {
-    // Gets list of points with forced update
-    // XXX: Could be moved to SetCell and Init methods for a better perfomance?
+func (grid *Grid) RecountUpdate() {
     for x := uint(0); x < grid.width; x++ {
         for y := uint(0); y < grid.height; y++ {
             if (*grid.GetCell(x, y)).forcedUpdate() {
@@ -43,6 +40,13 @@ func (grid *Grid) Update() {
             }
         }
     }
+}
+
+// Updates the grid
+func (grid *Grid) Update() {
+    // Gets list of points with forced update
+    // XXX: Could be moved to SetCell and Init methods for a better perfomance?
+    // Moved tempolarry to RecountUpdate
 
     // New list of update points for that points that are not forced
     // BUG: It doesn't work??? (Needs some tests)
