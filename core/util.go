@@ -8,8 +8,8 @@ type point struct {
 type Direction uint
 const (
     NORTH Direction = iota
-    SOUTH
     EAST
+    SOUTH
     WEST
 )
 

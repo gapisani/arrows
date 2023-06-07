@@ -24,8 +24,8 @@ func rotArr(arr rune, dir core.Direction) string {
 
 func render(g core.Grid) {
     w, h := g.Dimensions()
-    for x := uint(0); x < w; x++ {
-        for y := uint(0); y < h; y++ {
+    for y := uint(0); y < h; y++ {
+        for x := uint(0); x < w; x++ {
             cell := g.GetCell(x, y)
             dir := (*cell).Dir()
             lit := (*cell).Check()
@@ -56,16 +56,22 @@ func render(g core.Grid) {
 
 func TestMain(t *testing.T) {
     g := core.Grid{}
-    g.Init(50, 10)
+    g.Init(100, 100)
     w, h := g.Dimensions()
     for y := uint(0); y < h; y++ {
         for x := uint(0); x < w; x++ {
             *g.GetCell(x, y) = core.Cell(&core.None{})
         }
     }
-    *g.GetCell(w-2, 5) = core.Cell(&core.Source{})
-    for i := uint(w-3); i >= 2; i-- {
-        *g.GetCell(i, 5) = core.Cell(&core.MemCell{})
+    *g.GetCell(2, h-2) = core.Cell(&core.Source{})
+    for i := uint(h-3); i >= 2; i-- {
+        *g.GetCell(2, i) = core.Cell(&core.MemCell{})
+        *g.GetCell(3, i) = core.Cell(&core.Get{})
+        (*g.GetCell(3, i)).SetDir(core.EAST)
+        for j := uint(4); j <= w-2; j++ {
+            *g.GetCell(j, i) = core.Cell(&core.Wire{})
+            (*g.GetCell(j, i)).SetDir(core.EAST)
+        }
     }
     g.RecountUpdate()
     for t := 0; t <= 100; t++ {
