@@ -9,7 +9,6 @@ import (
 
 var (
     grid core.Grid
-    width, height uint
 )
 
 type CellType uint
@@ -135,8 +134,15 @@ func main() {
 
     // gridDimensions() [W, H]
     js.Global().Set("Dimensions", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        return []uint{width, height}
+        w, h := grid.Dimensions()
+        return []uint{w, h}
     }))
+
+    js.Global().Set("Update", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        grid.Update()
+        return nil
+    }))
+
 
     // Constants
     js.Global().Set("AND", uint(And))
