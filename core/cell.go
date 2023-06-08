@@ -11,7 +11,7 @@ type Cell interface {
     Check() bool
     Power()
     Dir() Direction
-    SetDir(Direction) 
+    SetDir(Direction)
 }
 
 /* Empty cell */
@@ -252,7 +252,8 @@ func (mc MemCell) Check() bool { return mc.state }
 
 // Depends, it could work as source
 func (mc MemCell) forcedUpdate() bool {
-    return mc.state
+    // return mc.state
+    return true // Not sure
 }
 
 func (mc *MemCell) Power() {

@@ -112,28 +112,31 @@ func cell2js(cell core.Cell) js.Value {
 }
 
 func main() {
-    // gridInit(int w, h)
-    js.Global().Set("gridInit", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+    // GridInit(int w, h)
+    js.Global().Set("GridInit", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         grid.Init(uint(args[0].Int()), uint(args[1].Int()))
         return nil
     }))
 
-    // getCell(int x, y) Cell
-    js.Global().Set("getCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+    // GetCell(int x, y) Cell
+    js.Global().Set("GetCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
         return cell2js(*cell)
     }))
 
-    // setCell(int x, y, cellType celltype, direction)
-    js.Global().Set("setCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+    // SetCell(int x, y, cellType celltype, direction)
+    js.Global().Set("SetCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        if(grid.FAST) {
+            grid.RecountUpdate()
+        }
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
         (*cell) = type2cell(CellType(args[2].Int()))
         (*cell).SetDir(core.Direction(args[3].Int()))
         return nil
     }))
 
-    // gridDimensions() [W, H]
-    js.Global().Set("Dimensions", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+    // GridDimensions() [W, H]
+    js.Global().Set("GridDimensions", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         w, h := grid.Dimensions()
         return []uint{w, h}
     }))
@@ -144,27 +147,33 @@ func main() {
         return nil
     }))
 
+    // SetFast(bool)
+    js.Global().Set("SetFast", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        grid.FAST = args[0].Bool()
+        return nil
+    }))
+
 
     // Constants
-    js.Global().Set("AND", uint(And))
-    js.Global().Set("ANGLED", uint(Angled))
-    js.Global().Set("BLOCK", uint(Block))
-    js.Global().Set("CROSS", uint(Cross))
-    js.Global().Set("FLASH", uint(Flash))
-    js.Global().Set("FRWDLEFT", uint(FrwdLeft))
+    js.Global().Set("AND",       uint(And))
+    js.Global().Set("ANGLED",    uint(Angled))
+    js.Global().Set("BLOCK",     uint(Block))
+    js.Global().Set("CROSS",     uint(Cross))
+    js.Global().Set("FLASH",     uint(Flash))
+    js.Global().Set("FRWDLEFT",  uint(FrwdLeft))
     js.Global().Set("FRWDRIGHT", uint(FrwdRight))
-    js.Global().Set("GET", uint(Get))
-    js.Global().Set("MEM_CELL", uint(MemCell))
-    js.Global().Set("NONE", uint(None))
-    js.Global().Set("NOT", uint(Not))
-    js.Global().Set("SOURCE", uint(Source))
-    js.Global().Set("UNKNOWN", uint(Unknown))
-    js.Global().Set("WIRE", uint(Wire))
-    js.Global().Set("XOR", uint(Xor))
+    js.Global().Set("GET",       uint(Get))
+    js.Global().Set("MEM_CELL",  uint(MemCell))
+    js.Global().Set("NONE",      uint(None))
+    js.Global().Set("NOT",       uint(Not))
+    js.Global().Set("SOURCE",    uint(Source))
+    js.Global().Set("UNKNOWN",   uint(Unknown))
+    js.Global().Set("WIRE",      uint(Wire))
+    js.Global().Set("XOR",       uint(Xor))
 
     js.Global().Set("NORTH", uint(core.NORTH))
-    js.Global().Set("EAST", uint(core.EAST))
-    js.Global().Set("WEST", uint(core.WEST))
+    js.Global().Set("EAST",  uint(core.EAST))
+    js.Global().Set("WEST",  uint(core.WEST))
     js.Global().Set("SOUTH", uint(core.SOUTH))
 
     // Don't quit from main
