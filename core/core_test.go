@@ -1,11 +1,11 @@
 package core_test
 
 import (
-	"fmt"
-	"testing"
+    "fmt"
+    "testing"
     "time"
 
-	"github.com/gapisani/arrows/core"
+    "github.com/gapisani/arrows/core"
 )
 
 func rotArr(arr rune, dir core.Direction) string {
@@ -56,27 +56,23 @@ func render(g core.Grid) {
 
 func TestMain(t *testing.T) {
     g := core.Grid{}
-    g.Init(100, 100)
+    g.Init(50, 50)
     w, h := g.Dimensions()
-    for y := uint(0); y < h; y++ {
-        for x := uint(0); x < w; x++ {
-            *g.GetCell(x, y) = core.Cell(&core.None{})
-        }
-    }
-    *g.GetCell(2, h-2) = core.Cell(&core.Source{})
-    for i := uint(h-3); i >= 2; i-- {
+    *g.GetCell(2, h-1) = core.Cell(&core.Source{})
+    for i := uint(h)-2; i > 0; i-- {
         *g.GetCell(2, i) = core.Cell(&core.MemCell{})
         *g.GetCell(3, i) = core.Cell(&core.Get{})
         (*g.GetCell(3, i)).SetDir(core.EAST)
-        for j := uint(4); j <= w-2; j++ {
+        for j := uint(4); j < w; j++ {
             *g.GetCell(j, i) = core.Cell(&core.Wire{})
             (*g.GetCell(j, i)).SetDir(core.EAST)
         }
     }
+    g.FAST = true
     g.RecountUpdate()
     for t := 0; t <= 100; t++ {
         g.Update()
-        time.Sleep(time.Millisecond * 100)
         render(g)
+        time.Sleep(time.Millisecond * 1000)
     }
 }

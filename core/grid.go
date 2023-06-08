@@ -22,9 +22,10 @@ func (grid Grid) Dimensions() (uint, uint) {
 func (grid *Grid) Init(w, h uint) {
     grid.width  = w
     grid.height = h
+    grid.cells = make([]Cell, w*h)
     for y := uint(0); y < h; y++ {
         for x := uint(0); x < w; x++ {
-            grid.cells = append(grid.cells, Cell(None{}))
+            (*grid.GetCell(x, y)) = &None{}
         }
     }
 }
@@ -32,6 +33,9 @@ func (grid *Grid) Init(w, h uint) {
 // Returns pointer to cell at x, y
 func (grid *Grid) GetCell(x, y uint) *Cell {
     index := y*grid.width + x
+    if(index >= uint(len(grid.cells))) {
+        return nil
+    }
     return &grid.cells[index]
 }
 
@@ -54,6 +58,8 @@ func (grid *Grid) Update() {
         grid.RecountUpdate()
     }
 
+    _cell := Cell(None{})
+
     // New list of update points for that points that are not forced
     newUpdate := []point{}
     for _, p := range(grid.updatePoints) {
@@ -72,12 +78,11 @@ func (grid *Grid) Update() {
             for y := p.y-1; y <= p.y+1; y++ {
                 // Because x & y are uint, they can't be below 0, so just check
                 // is it greater than width || height
-                if x > grid.width || y > grid.height {
-                    lcell := Cell(None{})
-                    g[j][i] = &lcell
-                } else {
-                    g[j][i] = grid.GetCell(x, y)
+                lcell := grid.GetCell(x, y)
+                if(lcell == nil) {
+                    lcell = &_cell
                 }
+                g[j][i] = lcell
                 i++
             }
             i = 0
@@ -89,7 +94,7 @@ func (grid *Grid) Update() {
         for _, rp := range(points) {
             newUpdate = append(newUpdate, point{rp.x+p.x-1, rp.y+p.y-1})
         }
-        if(!grid.FAST) {
+        if(grid.FAST) {
             if((*cell).forcedUpdate()) {
                 newUpdate = append(newUpdate, p)
             }
