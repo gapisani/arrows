@@ -100,16 +100,12 @@ func (grid *Grid) Update() {
             }
         }
     }
+    grid.updatePoints = []point{}
     encountered := map[point]bool{}
-    for v := range newUpdate {
-        if encountered[newUpdate[v]] == true {
-            // Do not add duplicate.
-        } else {
-            // Record this element as an encountered element.
-            encountered[newUpdate[v]] = true
-            // Append to result newUpdate.
-            grid.updatePoints = append(grid.updatePoints, newUpdate[v])
+    for _, v := range newUpdate {
+        if !encountered[v] {
+            encountered[v] = true
+            grid.updatePoints = append(grid.updatePoints, v)
         }
     }
-
 }
