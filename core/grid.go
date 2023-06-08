@@ -72,8 +72,12 @@ func (grid *Grid) Update() {
             for y := p.y-1; y <= p.y+1; y++ {
                 // Because x & y are uint, they can't be below 0, so just check
                 // is it greater than width || height
-                if x > grid.width || y > grid.height { continue }
-                g[j][i] = grid.GetCell(x, y)
+                if x > grid.width || y > grid.height {
+                    lcell := Cell(None{})
+                    g[j][i] = &lcell
+                } else {
+                    g[j][i] = grid.GetCell(x, y)
+                }
                 i++
             }
             i = 0

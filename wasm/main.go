@@ -138,6 +138,7 @@ func main() {
         return []uint{w, h}
     }))
 
+    // Update()
     js.Global().Set("Update", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         grid.Update()
         return nil
