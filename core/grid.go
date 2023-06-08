@@ -1,5 +1,9 @@
 package core
 
+import (
+    "fmt"
+)
+
 type Grid struct {
     // Contains all cells with arrows
     cells []Cell
@@ -100,5 +104,16 @@ func (grid *Grid) Update() {
             }
         }
     }
-    grid.updatePoints = newUpdate
+    encountered := map[point]bool{}
+    for v := range newUpdate {
+        if encountered[newUpdate[v]] == true {
+            // Do not add duplicate.
+        } else {
+            // Record this element as an encountered element.
+            encountered[newUpdate[v]] = true
+            // Append to result newUpdate.
+            grid.updatePoints = append(grid.updatePoints, newUpdate[v])
+        }
+    }
+
 }
