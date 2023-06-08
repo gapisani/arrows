@@ -1,9 +1,5 @@
 package core
 
-import (
-    "fmt"
-)
-
 type Grid struct {
     // Contains all cells with arrows
     cells []Cell
