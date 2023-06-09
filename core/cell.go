@@ -93,6 +93,7 @@ func (fd *FrwdLeft) Update(grid _lgrid) []point {
     p2 := dir2point(fd.dir, point{1,1})
     cell = grid[p2.x][p2.y]
     (*cell).Power()
+    fd.lit = false
     return []point{p1, p2}
 }
 // ------------
@@ -133,6 +134,7 @@ func (fr *FrwdRight) Update(grid _lgrid) []point {
     p2 := dir2point(rotateDir(fr.dir, RIGHT), point{1,1})
     cell = grid[p2.x][p2.y]
     (*cell).Power()
+    fr.lit = false
     return []point{p1, p2}
 }
 // ------------
@@ -176,6 +178,7 @@ func (c *Cross) Update(grid _lgrid) []point {
     p3 := dir2point(rotateDir(c.dir, RIGHT), point{1,1})
     cell = grid[p3.x][p3.y]
     (*cell).Power()
+    c.lit = false
     return []point{p1, p2, p3}
 }
 // ------------
@@ -208,6 +211,7 @@ func (a *Angled) Update(grid _lgrid) []point {
     p := dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, point{1,1}))
     cell := grid[p.x][p.y]
     (*cell).Power()
+    a.lit = false
     return []point{p}
 }
 // ------------
@@ -401,6 +405,7 @@ func (Block) Check() bool { return false }
 func (Block) Power() {}
 func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid _lgrid) []point {
+    // FIXME: This version of block won't handle Cross, Angled, etc
     //  p1 -[block]?-> p2
     p1 := dir2point(rotateDir(block.dir, BACK), point{1,1})
     p2 := dir2point(block.dir, point{1,1})
