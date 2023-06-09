@@ -39,7 +39,7 @@ func render(g core.Grid) {
             case *core.Source:
                 fmt.Print("@")
             case *core.None:
-                fmt.Print(" ")
+                fmt.Print(".")
             case *core.MemCell:
                 if(lit) {
                     fmt.Print("#")
@@ -54,27 +54,37 @@ func render(g core.Grid) {
     }
 }
 
-func TestMain(t *testing.T) {
+func TestSerpinski(t *testing.T) {
     g := core.Grid{}
     g.Init(50, 50)
     w, h := g.Dimensions()
-    for i := uint(h)-1; i > 0; i-- {
-        *g.GetCell(1, i) = core.Cell(&core.MemCell{})
-        *g.GetCell(2, i) = core.Cell(&core.Get{})
-        (*g.GetCell(2, i)).SetDir(core.EAST)
-        for j := uint(3); j < w; j++ {
+    for i := uint(0); i < h; i++ {
+        *g.GetCell(0, i) = core.Cell(&core.MemCell{})
+        *g.GetCell(1, i) = core.Cell(&core.Get{})
+        (*g.GetCell(1, i)).SetDir(core.EAST)
+        for j := uint(2); j < w; j++ {
             *g.GetCell(j, i) = core.Cell(&core.Wire{})
             (*g.GetCell(j, i)).SetDir(core.EAST)
         }
     }
-    *g.GetCell(1, h-1) = core.Cell(&core.Source{})
+    *g.GetCell(0, h-1) = core.Cell(&core.Source{})
     g.FAST = true
     g.RecountUpdate()
-    for t := 0; t <= 100; t++ {
+    for t := 0; t <= 1000; t++ {
         g.Update()
         render(g)
-        time.Sleep(time.Millisecond * 80)
+        time.Sleep(80 * time.Millisecond)
     }
+}
+
+func TestEdges(t *testing.T) {
+    g := core.Grid{}
+    g.Init(3, 3)
+    g.FAST = true
+    *g.GetCell(0, 0) = &core.Get{}
+    *g.GetCell(2, 2) = &core.Xor{}
+    g.Update()
+    render(g)
 }
 
 func BenchmarkFast(b *testing.B) {
@@ -82,10 +92,10 @@ func BenchmarkFast(b *testing.B) {
     g.Init(5000, 5000)
     w, h := g.Dimensions()
     for i := uint(h)-1; i > 1; i-- {
-        *g.GetCell(1, i) = core.Cell(&core.MemCell{})
-        *g.GetCell(2, i) = core.Cell(&core.Get{})
-        (*g.GetCell(2, i)).SetDir(core.EAST)
-        for j := uint(3); j < w-1; j++ {
+        *g.GetCell(0, i) = core.Cell(&core.MemCell{})
+        *g.GetCell(1, i) = core.Cell(&core.Get{})
+        (*g.GetCell(1, i)).SetDir(core.EAST)
+        for j := uint(2); j < w-1; j++ {
             *g.GetCell(j, i) = core.Cell(&core.Wire{})
             (*g.GetCell(j, i)).SetDir(core.EAST)
         }

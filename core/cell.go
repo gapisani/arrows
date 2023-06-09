@@ -256,8 +256,8 @@ func (mc MemCell) Check() bool { return mc.state }
 
 // Depends, it could work as source
 func (mc MemCell) forcedUpdate() bool {
-    // return mc.state
-    return true // Not sure
+    return mc.state
+    // return true // Not sure
 }
 
 func (mc *MemCell) Power() {

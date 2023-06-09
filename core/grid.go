@@ -73,16 +73,13 @@ func (grid *Grid) Update() {
 
         // TODO: make it flexible
         // Loop over area 3x3 around cell
-        for x := p.x-1; x <= p.x+1; x++ {
-            for y := p.y-1; y <= p.y+1; y++ {
-                // Because x & y are uint, they can't be below 0, so just check
-                // is it greater than width || height
-                lcell := grid.GetCell(x, y)
-                if(lcell == nil) {
+        for x := int(p.x-1); x <= int(p.x+1); x++ {
+            for y := int(p.y-1); y <= int(p.y+1); y++ {
+                if(x < 0 || x >= int(grid.width) || y < 0 || y >= int(grid.height)) {
                     c := Cell(None{})
                     g[j][i] = &c
                 } else {
-                    g[j][i] = lcell
+                    g[j][i] = grid.GetCell(uint(x), uint(y))
                 }
                 i++
             }
