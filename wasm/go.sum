@@ -6,3 +6,5 @@ github.com/gapisani/arrows/core v0.0.0-20230608175855-ff1c55cf60b0 h1:INLhmEa8cc
 github.com/gapisani/arrows/core v0.0.0-20230608175855-ff1c55cf60b0/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=
 github.com/gapisani/arrows/core v0.0.0-20230608181247-db5a0f527ed7 h1:sR1b8pqfVUJ52wb+6hqvX9p04kS51MmZMeU17HcDpDM=
 github.com/gapisani/arrows/core v0.0.0-20230608181247-db5a0f527ed7/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=
+github.com/gapisani/arrows/core v0.0.0-20230608183829-063586194b98 h1:TlkqioRF8Ql1YBV9U1hgbP4eF2eAs9juAzH3X+gMdsg=
+github.com/gapisani/arrows/core v0.0.0-20230608183829-063586194b98/go.mod h1:BN2IzUTyxdFzpjxboDJzvMhUXj7cPNLX4HN78s9wOW0=

@@ -58,12 +58,11 @@ func (grid *Grid) Update() {
         grid.RecountUpdate()
     }
 
-    _cell := Cell(None{})
-
     // New list of update points for that points that are not forced
     newUpdate := []point{}
     for _, p := range(grid.updatePoints) {
         cell := grid.GetCell(p.x, p.y)
+        if(cell == nil) { continue }
 
         // Passing grid 3x3 around cell to Update method
         // TODO: 5x5?
@@ -80,9 +79,11 @@ func (grid *Grid) Update() {
                 // is it greater than width || height
                 lcell := grid.GetCell(x, y)
                 if(lcell == nil) {
-                    lcell = &_cell
+                    c := Cell(None{})
+                    g[j][i] = &c
+                } else {
+                    g[j][i] = lcell
                 }
-                g[j][i] = lcell
                 i++
             }
             i = 0

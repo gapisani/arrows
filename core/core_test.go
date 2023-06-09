@@ -73,6 +73,47 @@ func TestMain(t *testing.T) {
     for t := 0; t <= 100; t++ {
         g.Update()
         render(g)
-        time.Sleep(time.Millisecond * 1000)
+        time.Sleep(time.Millisecond * 80)
     }
 }
+
+func BenchmarkFast(b *testing.B) {
+    g := core.Grid{}
+    g.Init(5000, 5000)
+    w, h := g.Dimensions()
+    for i := uint(h)-1; i > 1; i-- {
+        *g.GetCell(1, i) = core.Cell(&core.MemCell{})
+        *g.GetCell(2, i) = core.Cell(&core.Get{})
+        (*g.GetCell(2, i)).SetDir(core.EAST)
+        for j := uint(3); j < w-1; j++ {
+            *g.GetCell(j, i) = core.Cell(&core.Wire{})
+            (*g.GetCell(j, i)).SetDir(core.EAST)
+        }
+    }
+    *g.GetCell(1, h-1) = core.Cell(&core.Source{})
+    g.FAST = true
+    g.RecountUpdate()
+    for t := 0; t <= b.N; t++ {
+        g.Update()
+    }
+}
+
+// func BenchmarkNormal(b *testing.B) {
+//     g := core.Grid{}
+//     g.Init(50, 50)
+//     w, h := g.Dimensions()
+//     for i := uint(h)-1; i > 0; i-- {
+//         *g.GetCell(1, i) = core.Cell(&core.MemCell{})
+//         *g.GetCell(2, i) = core.Cell(&core.Get{})
+//         (*g.GetCell(2, i)).SetDir(core.EAST)
+//         for j := uint(3); j < w; j++ {
+//             *g.GetCell(j, i) = core.Cell(&core.Wire{})
+//             (*g.GetCell(j, i)).SetDir(core.EAST)
+//         }
+//     }
+//     *g.GetCell(1, h-1) = core.Cell(&core.Source{})
+//     g.FAST = false
+//     for t := 0; t <= 100; t++ {
+//         g.Update()
+//     }
+// }
