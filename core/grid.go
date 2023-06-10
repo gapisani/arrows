@@ -47,6 +47,19 @@ func (grid *Grid) RecountUpdate() {
             }
         }
     }
+    grid.updatePointsClean()
+}
+
+func (grid *Grid) updatePointsClean() {
+    encountered := map[point]bool{}
+    cells := []point{}
+    for _, v := range grid.updatePoints {
+        if !encountered[v] {
+            encountered[v] = true
+            cells = append(grid.updatePoints, v)
+        }
+    }
+    grid.updatePoints = cells
 }
 
 // Updates the grid
@@ -98,12 +111,10 @@ func (grid *Grid) Update() {
             }
         }
     }
-    grid.updatePoints = []point{}
-    encountered := map[point]bool{}
-    for _, v := range newUpdate {
-        if !encountered[v] {
-            encountered[v] = true
-            grid.updatePoints = append(grid.updatePoints, v)
-        }
+    grid.updatePoints = newUpdate
+
+    // if not FAST then it will cleared in beggining of this method, in RecountUpdate
+    if(grid.FAST) {
+        grid.updatePointsClean()
     }
 }

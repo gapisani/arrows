@@ -367,10 +367,10 @@ func (xor *Xor) Update(grid _lgrid) []point {
 /* And */
 type And struct {
     dir Direction
+    lit bool
 }
 
-// Same as xor
-func (And) Check() bool { return false }
+func (a And) Check() bool { return a.lit }
 
 func (a And) Dir() Direction { return a.dir }
 
@@ -385,8 +385,12 @@ func (and *And) Update(grid _lgrid) []point {
     b1 := grid[p1.x][p1.y]
     b2 := grid[p2.x][p2.y]
     rb := grid[rp.x][rp.y]
-    if((*b1).Check() && (*b2).Check()) {
+    if(and.lit) {
         (*rb).Power()
+        and.lit = false
+    }
+    if((*b1).Check() && (*b2).Check()) {
+        and.lit = true
     }
     return []point{rp}
 }
