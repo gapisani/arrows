@@ -126,12 +126,16 @@ func main() {
 
     // SetCell(int x, y, cellType celltype, direction)
     js.Global().Set("SetCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        if(grid.FAST) {
-            grid.RecountUpdate()
-        }
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
         (*cell) = type2cell(CellType(args[2].Int()))
         (*cell).SetDir(core.Direction(args[3].Int()))
+        grid.AddUpdate(uint(args[0].Int()), uint(args[1].Int()))
+        return nil
+    }))
+
+    // RecountUpdate()
+    js.Global().Set("RecountUpdate", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        grid.RecountUpdate()
         return nil
     }))
 
@@ -146,13 +150,6 @@ func main() {
         grid.Update()
         return nil
     }))
-
-    // SetFast(bool)
-    js.Global().Set("SetFast", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        grid.FAST = args[0].Bool()
-        return nil
-    }))
-
 
     // Constants
     js.Global().Set("AND",       uint(And))
