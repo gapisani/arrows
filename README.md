@@ -1,6 +1,6 @@
 # Arrows
 
-It's a game that has an idea similar to Redstone in Minecraft.
+It's a game that has an idea similar to Redstone in Minecraft, idea stolen from [Onigiri](https://github.com/ArtemOnigiri/).
 
 It has basic logic gates like AND, NOT, XOR, etc.
 
@@ -8,8 +8,12 @@ Work in progress...
 
 ## Technical details
 
-At the moment, we are working on the CORE part, which is basically a library that will be used in future realizations. Our plans are to port this library to WASM and maybe other programming languages like C.
+- CORE - is main module/library, it contains logic - you can use it with Go. It almost done, but still have (a lot of) issues.
+- WASM - Port for Web/JS. Kinda done, but isn't really tested
+- SHARED - Shared library(dll/so). You could use it in C, C++, Python, etc. Not tested at all, and it has low priority, so...
+
 </br>
-The next step is to make WASM bindings and a basic GUI using HTML+CSS+JS.
+In future, we'll try to make this game multithreading and maybe even decentralized (a map will be calculated on several computers).
 </br>
-After this, we'll try to make this game multithreading and maybe even decentralized (a map will be calculated on several computers).
+</br>
+I hope I'll make docs about adding new types of cells, compiling it, porting, etc
