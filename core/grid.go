@@ -69,6 +69,8 @@ func (grid *Grid) Update() {
     // XXX: I'd like to make FAST mode stable
     if(!grid.FAST) {
         grid.RecountUpdate()
+    } else {
+        grid.updatePointsClean()
     }
 
     // New list of update points for that points that are not forced
@@ -112,9 +114,4 @@ func (grid *Grid) Update() {
         }
     }
     grid.updatePoints = newUpdate
-
-    // if not FAST then it will cleared in beggining of this method, in RecountUpdate
-    if(grid.FAST) {
-        grid.updatePointsClean()
-    }
 }
