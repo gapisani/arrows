@@ -8,9 +8,6 @@ type Grid struct {
 
     // Used for smart cells loading, could be changed in future
     updatePoints []point
-
-    // enables fast mode, increases FPS but could be unstable
-    FAST bool
 }
 
 // Get size of the grid
@@ -37,6 +34,11 @@ func (grid *Grid) GetCell(x, y uint) *Cell {
         return nil
     }
     return &grid.cells[index]
+}
+
+func (grid *Grid) AddUpdate(x, y uint) {
+    grid.updatePoints = append(grid.updatePoints, point{x, y})
+    grid.updatePointsClean()
 }
 
 func (grid *Grid) RecountUpdate() {
@@ -67,11 +69,7 @@ func (grid *Grid) Update() {
     // Gets list of points with forced update
     // XXX: Could be moved to SetCell and Init methods for a better perfomance?
     // XXX: I'd like to make FAST mode stable
-    if(!grid.FAST) {
-        grid.RecountUpdate()
-    } else {
-        grid.updatePointsClean()
-    }
+    grid.updatePointsClean()
 
     // New list of update points for that points that are not forced
     newUpdate := []point{}
@@ -107,10 +105,8 @@ func (grid *Grid) Update() {
         for _, rp := range(points) {
             newUpdate = append(newUpdate, point{rp.x+p.x-1, rp.y+p.y-1})
         }
-        if(grid.FAST) {
-            if((*cell).forcedUpdate()) {
-                newUpdate = append(newUpdate, p)
-            }
+        if((*cell).forcedUpdate()) {
+            newUpdate = append(newUpdate, p)
         }
     }
     grid.updatePoints = newUpdate

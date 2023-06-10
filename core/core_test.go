@@ -3,7 +3,7 @@ package core_test
 import (
     "fmt"
     "testing"
-    "time"
+    // "time"
 
     "github.com/gapisani/arrows/core"
 )
@@ -68,26 +68,23 @@ func TestSerpinski(t *testing.T) {
         }
     }
     *g.GetCell(0, h-1) = core.Cell(&core.Source{})
-    g.FAST = true
     g.RecountUpdate()
-    for t := 0; t <= 1000; t++ {
+    for t := 0; t <= 30; t++ {
         g.Update()
         render(g)
-        time.Sleep(80 * time.Millisecond)
     }
 }
 
 func TestEdges(t *testing.T) {
     g := core.Grid{}
     g.Init(3, 3)
-    g.FAST = true
     *g.GetCell(0, 0) = &core.Get{}
     *g.GetCell(2, 2) = &core.Xor{}
     g.Update()
     render(g)
 }
 
-func BenchmarkFast(b *testing.B) {
+func BenchmarkSerpinski(b *testing.B) {
     g := core.Grid{}
     g.Init(5000, 5000)
     w, h := g.Dimensions()
@@ -101,7 +98,6 @@ func BenchmarkFast(b *testing.B) {
         }
     }
     *g.GetCell(1, h-1) = core.Cell(&core.Source{})
-    g.FAST = true
     g.RecountUpdate()
     for t := 0; t <= b.N; t++ {
         g.Update()
