@@ -1,5 +1,7 @@
 package core
 
+import "math/rand"
+
 const (
     _LGRID_SIZE = 3
 )
@@ -19,7 +21,7 @@ type Cell interface {
 type None struct {}
 
 // In fact, it should never be updated
-func (None) Update(_lgrid) { return }
+func (None) Update(_lgrid) {}
 
 // Doesn't forces updates on other cells
 func (None) forcedUpdate() bool {
@@ -236,21 +238,19 @@ func (a *Angled) Update(grid _lgrid) {
 // ------------
 
 /* Source */
-type Source struct {
-    dir Direction
-}
+type Source struct {}
 
 func (a Source) updateQueue() []point {
     return []point{
-        dir2point(a.dir, point{1, 1}),
-        dir2point(rotateDir(a.dir, BACK), point{1, 1}),
-        dir2point(rotateDir(a.dir, LEFT), point{1, 1}),
-        dir2point(rotateDir(a.dir, RIGHT), point{1, 1}),
+        dir2point(NORTH, point{1, 1}),
+        dir2point(EAST,  point{1, 1}),
+        dir2point(SOUTH, point{1, 1}),
+        dir2point(WEST,  point{1, 1}),
     }
 }
-func (a Source) Dir() Direction { return a.dir }
+func (a Source) Dir() Direction { return NORTH }
 
-func (a *Source) SetDir(dir Direction) { a.dir = dir }
+func (Source) SetDir(dir Direction) { }
 
 func (Source) Check() bool { return true }
 
@@ -289,7 +289,6 @@ func (mc MemCell) Check() bool { return mc.state }
 // Depends, it could work as source
 func (mc MemCell) forcedUpdate() bool {
     return mc.state
-    // return true // Not sure
 }
 
 func (mc *MemCell) Power() {
@@ -333,8 +332,7 @@ func (flash *Flash) Update(grid _lgrid) {
         return
     } else { flash.used = true }
     p := flash.updateQueue()[0]
-    cell := grid[p.x][p.y]
-    (*cell).Power()
+    (*grid[p.x][p.y]).Power()
 }
 // ------------
 
@@ -401,12 +399,12 @@ func (a *Xor) Power() {
 
 func (Xor) forcedUpdate() bool { return false }
 
-// TODO: REDO LOGIC
 func (xor *Xor) Update(grid _lgrid) {
     rp := xor.updateQueue()[0]
     rb := grid[rp.x][rp.y]
     if(xor.lcount == 1) {
         (*rb).Power()
+        xor.lit = false
     }
     xor.lcount = 0
 }
@@ -453,11 +451,11 @@ func (and *And) Update(grid _lgrid) {
 /* Block */
 type Block struct {
     dir Direction
+    lit bool
 }
 // TODO: redo logic
 
 func (a Block) updateQueue() []point {
-    // TODO
     return []point{
         dir2point(a.dir, point{1,1}),
     }
@@ -467,7 +465,7 @@ func (a Block) Dir() Direction { return a.dir }
 
 func (a *Block) SetDir(dir Direction) { a.dir = dir }
 
-func (Block) Check() bool { return false }
+func (a Block) Check() bool { return a.lit}
 func (Block) Power() {}
 func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid _lgrid) {
@@ -477,13 +475,17 @@ func (block *Block) Update(grid _lgrid) {
     p2 := block.updateQueue()[0]
     b1 := grid[p1.x][p1.y]
     b2 := grid[p2.x][p2.y]
-    if((*b1).Check()) {
+    if(block.lit) {
         switch t := (*b2).(type) {
         case *Wire:
             t.lit = false
         case *MemCell:
             t.state = false
         }
+        block.lit = false
+    }
+    if((*b1).Check()) {
+        block.lit = true
     }
 }
 // ------------
@@ -518,6 +520,127 @@ func (get *Get) Update(grid _lgrid) {
     if((*b1).Check()) {
         get.state = true
     }
+}
+// ------------
+
+
+// Double
+type Double struct {
+    dir Direction
+    lit uint8
+}
+
+func (a *Double) Update(g _lgrid) {
+    switch a.lit {
+    case 0:
+        return
+    case 1:
+        a.lit++
+    case 2:
+        p := a.updateQueue()[0]
+        (*g[p.x][p.y]).Power()
+        a.lit = 0
+    }
+}
+
+func (Double) forcedUpdate() bool {
+    return false
+}
+
+func (a Double) Dir() Direction { return a.dir }
+func (a *Double) SetDir(dir Direction) { a.dir = dir }
+
+func (a *Double) Power() {
+    a.lit = 1
+}
+func (a Double) Check() bool {
+    return a.lit == 2
+}
+func (a Double) updateQueue() []point {
+    return []point{
+        dir2point(a.dir, point{1, 1}),
+    }
+}
+//-----------
+
+// Double
+type Random struct {
+    dir Direction
+    lit uint8
+}
+
+func (a *Random) Update(g _lgrid) {
+    switch a.lit {
+    case 0:
+        return
+    case 1:
+        a.lit = 0
+    case 2:
+        p := a.updateQueue()[0]
+        (*g[p.x][p.y]).Power()
+        a.lit = 0
+    }
+}
+
+func (Random) forcedUpdate() bool {
+    return false
+}
+
+func (a Random) Dir() Direction { return a.dir }
+func (a *Random) SetDir(dir Direction) { a.dir = dir }
+
+func (a *Random) Power() {
+    a.lit = uint8(rand.Int()) % 2
+}
+func (a Random) Check() bool {
+    return a.lit == 2
+}
+func (a Random) updateQueue() []point {
+    return []point{
+        dir2point(a.dir, point{1, 1}),
+    }
+}
+//-----------
+
+/* Double Memory Cell */
+type DoubleMemCell struct {
+    dir Direction
+    lcount uint
+    state bool    // State -> On/Off
+}
+func (a DoubleMemCell) updateQueue() []point {
+    return []point{
+        dir2point(a.dir, point{1, 1}),
+    }
+}
+
+func (a DoubleMemCell) Dir() Direction { return a.dir }
+
+func (a *DoubleMemCell) SetDir(dir Direction) { a.dir = dir }
+
+func (a DoubleMemCell) Check() bool { return a.state }
+
+func (a DoubleMemCell) forcedUpdate() bool {
+    return a.state
+}
+
+func (a *DoubleMemCell) Power() {
+    a.lcount++
+}
+
+// Works as source that can be turned off or on
+func (a *DoubleMemCell) Update(grid _lgrid) {
+    if(a.state) {
+        p := a.updateQueue()[0]
+        cell := grid[p.x][p.y]
+        (*cell).Power()
+    }
+    if(a.lcount >= 2) {
+        a.state = true
+    } else if(a.state && a.lcount == 1) {
+        a.state = false
+    }
+    a.lcount = 0
 }
 // ------------
 
