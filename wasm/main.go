@@ -19,14 +19,16 @@ const (
     Block
     Cross
     Flash
-    FrwdLeft
-    FrwdRight
+    FrwdSide
     Get
     MemCell
     Not
     Source
     Wire
     Xor
+    DoubleMemCell
+    Random
+    Double
     Unknown
 )
 
@@ -43,10 +45,8 @@ func cell2type(cell core.Cell) CellType {
         return Cross
     case *core.Flash:
         return Flash
-    case *core.FrwdLeft:
-        return FrwdLeft
-    case *core.FrwdRight:
-        return FrwdRight
+    case *core.FrwdSide:
+        return FrwdSide
     case *core.Get:
         return Get
     case *core.MemCell:
@@ -78,10 +78,8 @@ func type2cell(cellType CellType) core.Cell {
         return &core.Cross{}
     case Flash:
         return &core.Flash{}
-    case FrwdLeft:
-        return &core.FrwdLeft{}
-    case FrwdRight:
-        return &core.FrwdRight{}
+    case FrwdSide:
+        return &core.FrwdSide{}
     case Get:
         return &core.Get{}
     case MemCell:
@@ -100,7 +98,6 @@ func type2cell(cellType CellType) core.Cell {
         return nil
     }
 }
-
 
 func cell2js(cell core.Cell) js.Value {
     return js.ValueOf(map[string]interface{}{
@@ -129,7 +126,7 @@ func main() {
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
         (*cell) = type2cell(CellType(args[2].Int()))
         (*cell).SetDir(core.Direction(args[3].Int()))
-        grid.AddUpdate(uint(args[0].Int()), uint(args[1].Int()))
+        grid.RecountUpdate()
         return nil
     }))
 
@@ -157,8 +154,7 @@ func main() {
     js.Global().Set("BLOCK",     uint(Block))
     js.Global().Set("CROSS",     uint(Cross))
     js.Global().Set("FLASH",     uint(Flash))
-    js.Global().Set("FRWDLEFT",  uint(FrwdLeft))
-    js.Global().Set("FRWDRIGHT", uint(FrwdRight))
+    js.Global().Set("FRWDSIDE",  uint(FrwdSide))
     js.Global().Set("GET",       uint(Get))
     js.Global().Set("MEM_CELL",  uint(MemCell))
     js.Global().Set("NONE",      uint(None))
