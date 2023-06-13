@@ -8,9 +8,9 @@ type Not struct {
 
 func (a Not) Dir() Direction { return a.dir }
 
-func (a Not) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a Not) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 func (a *Not) SetDir(dir Direction) { a.dir = dir }
@@ -23,11 +23,11 @@ func (Not) Power() {}
 
 func (not *Not) Update(grid _lgrid) {
     // p1 -[NOT]-> p2
-    p1 := dir2point(rotateDir(not.dir, BACK), point{1, 1})
+    p1 := dir2point(rotateDir(not.dir, BACK), Point{1, 1})
     p2 := not.updateQueue()[0]
 
-    b1 := grid[p1.x][p1.y]
-    b2 := grid[p2.x][p2.y]
+    b1 := grid[p1.X][p1.Y]
+    b2 := grid[p2.X][p2.Y]
     if(not.lit) {
         (*b2).Power()
         not.lit = true
@@ -47,9 +47,9 @@ type Xor struct {
 
 func (a Xor) Dir() Direction { return a.dir }
 
-func (a Xor) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a Xor) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 func (a *Xor) SetDir(dir Direction) { a.dir = dir }
@@ -69,7 +69,7 @@ func (Xor) forcedUpdate() bool { return false }
 
 func (xor *Xor) Update(grid _lgrid) {
     rp := xor.updateQueue()[0]
-    rb := grid[rp.x][rp.y]
+    rb := grid[rp.X][rp.Y]
     if(xor.lit) {
         (*rb).Power()
         xor.lit = false
@@ -85,9 +85,9 @@ type And struct {
     lcount uint
 }
 
-func (a And) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a And) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 func (a And) Check() bool { return a.lit }
@@ -107,7 +107,7 @@ func (And) forcedUpdate() bool { return false }
 
 func (and *And) Update(grid _lgrid) {
     rp := and.updateQueue()[0]
-    rb := grid[rp.x][rp.y]
+    rb := grid[rp.X][rp.Y]
     if(and.lit) {
         (*rb).Power()
         and.lit = false
@@ -123,9 +123,9 @@ type Block struct {
 }
 // TODO: redo logic
 
-func (a Block) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1,1}),
+func (a Block) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1,1}),
     }
 }
 
@@ -139,10 +139,10 @@ func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid _lgrid) {
     // FIXME: This version of block won't handle Cross, Angled, etc
     //  p1 -[block]?-> p2
-    p1 := dir2point(rotateDir(block.dir, BACK), point{1,1})
+    p1 := dir2point(rotateDir(block.dir, BACK), Point{1,1})
     p2 := block.updateQueue()[0]
-    b1 := grid[p1.x][p1.y]
-    b2 := grid[p2.x][p2.y]
+    b1 := grid[p1.X][p1.Y]
+    b2 := grid[p2.X][p2.Y]
     if(block.lit) {
         switch t := (*b2).(type) {
         case *Wire:

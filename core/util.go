@@ -1,8 +1,7 @@
 package core
 
-// Internal thing, point
-type point struct {
-    x, y uint
+type Point struct {
+    X, Y uint
 }
 
 type Direction uint
@@ -26,18 +25,18 @@ const (
 // (0,2) (1,2) (2,2)
 
 // Converts direction to point(or vector)
-func dir2point(dir Direction, p point) point {
+func dir2point(dir Direction, p Point) Point {
     switch dir {
     case NORTH:
-        return point{p.x, p.y-1}
+        return Point{p.X, p.Y-1}
     case WEST:
-        return point{p.x-1, p.y}
+        return Point{p.X-1, p.Y}
     case SOUTH:
-        return point{p.x, p.y+1}
+        return Point{p.X, p.Y+1}
     case EAST:
-        return point{p.x+1, p.y}
+        return Point{p.X+1, p.Y}
     }
-    return point{}
+    return Point{}
 }
 
 // Rotates direction

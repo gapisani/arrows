@@ -3,56 +3,55 @@ package core_test
 import (
 	"fmt"
 	"testing"
+    "strings"
 	// "time"
 
 	"github.com/gapisani/arrows/core"
 )
 
-func rotArr(arr rune, dir core.Direction) string {
+func rotArr(arr byte, dir core.Direction) byte {
     switch dir {
     case core.WEST:
-        return string(arr)
+        return arr
     case core.NORTH:
-        return string(arr+1)
+        return arr+1
     case core.EAST:
-        return string(arr+2)
+        return arr+2
     case core.SOUTH:
-        return string(arr+3)
+        return arr+3
     }
-    return string(arr)
+    return arr
 }
 
-func render(g core.Grid) {
+func render(g core.Grid, points []core.Point) {
     w, h := g.Dimensions()
-    for y := uint(0); y < h; y++ {
-        for x := uint(0); x < w; x++ {
-            cell := g.GetCell(x, y)
-            dir := (*cell).Dir()
-            lit := (*cell).Check()
-            switch (*cell).(type) {
-            case *core.Wire:
-                if(lit) {
-                    fmt.Print(rotArr('⬅', dir))
-                } else {
-                    fmt.Print(rotArr('←', dir))
-                }
-            case *core.Source:
-                fmt.Print("@")
-            case *core.None:
-                fmt.Print(".")
-            case *core.MemCell:
-                if(lit) {
-                    fmt.Print("#")
-                } else {
-                    fmt.Print("O")
-                }
-            default:
-                fmt.Print("x")
+    screen := []byte(strings.Repeat(strings.Repeat(".", int(w)) + "\n", int(h)))
+    for _, p := range(points) {
+        cell := g.GetCell(p.X, p.Y)
+        if(cell == nil) { continue }
+        lit := (*cell).Check()
+        chr := byte('x')
+        switch (*cell).(type) {
+        case *core.Wire:
+            if(lit) {
+                chr = '^'
+            } else {
+                chr = '>'
+            }
+        case *core.Source:
+            chr = '@'
+        case *core.None:
+            chr = '.'
+        case *core.MemCell:
+            if(lit) {
+                chr = '#'
+            } else {
+                chr = 'O'
             }
         }
-        fmt.Println()
+        screen[p.Y*(w+1)+p.X] = chr
     }
-    fmt.Println("---------")
+    fmt.Println(string(screen), "---------")
 }
 
 func TestSerpinski(t *testing.T) {
@@ -71,8 +70,8 @@ func TestSerpinski(t *testing.T) {
     *g.GetCell(0, h-1) = core.Cell(&core.Source{})
     g.RecountUpdate()
     for t := 0; t <= 30; t++ {
-        g.Update()
-        render(g)
+        p := g.Update()
+        render(g, p)
     }
 }
 
@@ -105,8 +104,8 @@ func _TestEdges(t *testing.T) {
     g.Init(3, 3)
     *g.GetCell(0, 0) = &core.Get{}
     *g.GetCell(2, 2) = &core.Xor{}
-    g.Update()
-    render(g)
+    p := g.Update()
+    render(g, p)
 }
 
 func _TestUpdate(t *testing.T) {

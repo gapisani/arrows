@@ -14,7 +14,7 @@ type Cell interface {
     Power()
     Dir() Direction
     SetDir(Direction)
-    updateQueue() []point
+    updateQueue() []Point
 }
 
 /* Empty cell */
@@ -33,18 +33,18 @@ func (None) SetDir(dir Direction) { }
 
 func (None) Power() {}
 func (None) Check() bool { return false }
-func (None) updateQueue() []point { return []point{} }
+func (None) updateQueue() []Point { return []Point{} }
 // ------------
 
 /* Source */
 type Source struct {}
 
-func (a Source) updateQueue() []point {
-    return []point{
-        dir2point(NORTH, point{1, 1}),
-        dir2point(EAST,  point{1, 1}),
-        dir2point(SOUTH, point{1, 1}),
-        dir2point(WEST,  point{1, 1}),
+func (a Source) updateQueue() []Point {
+    return []Point{
+        dir2point(NORTH, Point{1, 1}),
+        dir2point(EAST,  Point{1, 1}),
+        dir2point(SOUTH, Point{1, 1}),
+        dir2point(WEST,  Point{1, 1}),
     }
 }
 func (a Source) Dir() Direction { return NORTH }
@@ -63,7 +63,7 @@ func (Source) forcedUpdate() bool {
 // Powers the next cell
 func (a *Source) Update(grid _lgrid) {
     for _, p := range(a.updateQueue()) {
-        (*grid[p.x][p.y]).Power()
+        (*grid[p.X][p.Y]).Power()
     }
 }
 // ------------
@@ -73,9 +73,9 @@ type MemCell struct {
     dir Direction
     state bool    // State -> On/Off
 }
-func (a MemCell) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a MemCell) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 
@@ -98,7 +98,7 @@ func (mc *MemCell) Power() {
 func (a *MemCell) Update(grid _lgrid) {
     if(!a.state) {return}
     p := a.updateQueue()[0]
-    cell := grid[p.x][p.y]
+    cell := grid[p.X][p.Y]
     (*cell).Power()
 }
 // ------------
@@ -111,12 +111,12 @@ type Flash struct {
 // Same as memcell
 func (f Flash) forcedUpdate() bool { return !f.used}
 
-func (a Flash) updateQueue() []point {
-    return []point{
-        dir2point(NORTH, point{1, 1}),
-        dir2point(EAST,  point{1, 1}),
-        dir2point(SOUTH, point{1, 1}),
-        dir2point(WEST,  point{1, 1}),
+func (a Flash) updateQueue() []Point {
+    return []Point{
+        dir2point(NORTH, Point{1, 1}),
+        dir2point(EAST,  Point{1, 1}),
+        dir2point(SOUTH, Point{1, 1}),
+        dir2point(WEST,  Point{1, 1}),
     }
 }
 
@@ -133,7 +133,7 @@ func (flash *Flash) Update(grid _lgrid) {
         return
     } else { flash.used = true }
     for _, p := range(flash.updateQueue()) {
-        (*grid[p.x][p.y]).Power()
+        (*grid[p.X][p.Y]).Power()
     }
 }
 // ------------
@@ -149,9 +149,9 @@ func (a *Get) SetDir(dir Direction) { a.dir = dir }
 func (g Get) Check() bool { return g.state }
 func (Get) Power() {}
 
-func (a Get) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a Get) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 
@@ -159,11 +159,11 @@ func (a Get) updateQueue() []point {
 func (Get) forcedUpdate() bool { return true }
 
 func (get *Get) Update(grid _lgrid) {
-    p1 := dir2point(rotateDir(get.dir, BACK), point{1, 1})
-    b1 := grid[p1.x][p1.y]
+    p1 := dir2point(rotateDir(get.dir, BACK), Point{1, 1})
+    b1 := grid[p1.X][p1.Y]
     if(get.state) {
         p2 := get.updateQueue()[0]
-        b2 := grid[p2.x][p2.y]
+        b2 := grid[p2.X][p2.Y]
         (*b2).Power()
         get.state = false
     }
@@ -188,7 +188,7 @@ func (a *Random) Update(g _lgrid) {
         a.lit = 0
     case 2:
         p := a.updateQueue()[0]
-        (*g[p.x][p.y]).Power()
+        (*g[p.X][p.Y]).Power()
         a.lit = 0
     }
 }
@@ -206,9 +206,9 @@ func (a *Random) Power() {
 func (a Random) Check() bool {
     return a.lit == 2
 }
-func (a Random) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a Random) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 //-----------
@@ -219,9 +219,9 @@ type DoubleMemCell struct {
     lcount uint
     state bool    // State -> On/Off
 }
-func (a DoubleMemCell) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a DoubleMemCell) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 
@@ -241,7 +241,7 @@ func (a *DoubleMemCell) Power() {
 func (a *DoubleMemCell) Update(grid _lgrid) {
     if(a.state) {
         p := a.updateQueue()[0]
-        cell := grid[p.x][p.y]
+        cell := grid[p.X][p.Y]
         (*cell).Power()
     }
     if(a.lcount >= 2) {

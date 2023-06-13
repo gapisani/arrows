@@ -8,9 +8,9 @@ type Wire struct {
 
 func (a Wire) Dir() Direction { return a.dir }
 func (a *Wire) SetDir(dir Direction) { a.dir = dir }
-func (a Wire) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1,1}),
+func (a Wire) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1,1}),
     }
 }
 
@@ -29,7 +29,7 @@ func (Wire) forcedUpdate() bool {
 func (a *Wire) Update(grid _lgrid) {
     if(!a.lit) {return}
     p := a.updateQueue()[0]
-    cell := grid[p.x][p.y]
+    cell := grid[p.X][p.Y]
     (*cell).Power()
     a.lit = false
 }
@@ -41,10 +41,10 @@ type FrwdSide struct {
     dir Direction
 }
 
-func (a FrwdSide) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1,1}),
-        dir2point(rotateDir(a.dir, RIGHT), point{1,1}),
+func (a FrwdSide) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1,1}),
+        dir2point(rotateDir(a.dir, RIGHT), Point{1,1}),
     }
 }
 
@@ -73,9 +73,9 @@ func (a *FrwdSide) Update(grid _lgrid) {
     if(!a.lit) { return }
     p1 := a.updateQueue()[0]
     p2 := a.updateQueue()[1]
-    cell := grid[p1.x][p1.y]
+    cell := grid[p1.X][p1.Y]
     (*cell).Power()
-    cell = grid[p2.x][p2.y]
+    cell = grid[p2.X][p2.Y]
     (*cell).Power()
     a.lit = false
 }
@@ -87,11 +87,11 @@ type Cross struct {
     dir Direction
 }
 
-func (a Cross) updateQueue() []point {
-    return []point{
-        dir2point(rotateDir(a.dir, LEFT), point{1,1}),
-        dir2point(a.dir, point{1,1}),
-        dir2point(rotateDir(a.dir, RIGHT), point{1,1}),
+func (a Cross) updateQueue() []Point {
+    return []Point{
+        dir2point(rotateDir(a.dir, LEFT), Point{1,1}),
+        dir2point(a.dir, Point{1,1}),
+        dir2point(rotateDir(a.dir, RIGHT), Point{1,1}),
     }
 }
 
@@ -119,7 +119,7 @@ func (Cross) forcedUpdate() bool {
 func (a *Cross) Update(grid _lgrid) {
     if(!a.lit) { return }
     for _, p := range(a.updateQueue()) {
-        (*grid[p.x][p.y]).Power()
+        (*grid[p.X][p.Y]).Power()
     }
     a.lit = false
 }
@@ -141,9 +141,9 @@ func (a *Angled) SetDir(dir Direction) { a.dir = dir }
 
 // Doesn't forces updates on other cells
 func (Angled) forcedUpdate() bool { return false }
-func (a Angled) updateQueue() []point {
-    return []point{
-        dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, point{1,1})),
+func (a Angled) updateQueue() []Point {
+    return []Point{
+        dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, Point{1,1})),
     }
 }
 
@@ -156,7 +156,7 @@ func (a Angled) updateQueue() []point {
 func (a *Angled) Update(grid _lgrid) {
     if(!a.lit) { return }
     p := a.updateQueue()[0]
-    cell := grid[p.x][p.y]
+    cell := grid[p.X][p.Y]
     (*cell).Power()
     a.lit = false
 }
@@ -176,7 +176,7 @@ func (a *Double) Update(g _lgrid) {
         a.lit++
     case 2:
         p := a.updateQueue()[0]
-        (*g[p.x][p.y]).Power()
+        (*g[p.X][p.Y]).Power()
         a.lit = 0
     }
 }
@@ -194,9 +194,9 @@ func (a *Double) Power() {
 func (a Double) Check() bool {
     return a.lit == 2
 }
-func (a Double) updateQueue() []point {
-    return []point{
-        dir2point(a.dir, point{1, 1}),
+func (a Double) updateQueue() []Point {
+    return []Point{
+        dir2point(a.dir, Point{1, 1}),
     }
 }
 //-----------
