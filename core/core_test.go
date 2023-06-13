@@ -1,11 +1,11 @@
 package core_test
 
 import (
-    "fmt"
-    "testing"
-    // "time"
+	"fmt"
+	"testing"
+	// "time"
 
-    "github.com/gapisani/arrows/core"
+	"github.com/gapisani/arrows/core"
 )
 
 func rotArr(arr rune, dir core.Direction) string {
@@ -52,6 +52,7 @@ func render(g core.Grid) {
         }
         fmt.Println()
     }
+    fmt.Println("---------")
 }
 
 func TestSerpinski(t *testing.T) {
@@ -75,13 +76,51 @@ func TestSerpinski(t *testing.T) {
     }
 }
 
-func TestEdges(t *testing.T) {
+func TestWire(t *testing.T) {
+    g := core.Grid{}
+    g.Init(10, 10)
+    _, h := g.Dimensions()
+    for i := uint(1); i < h; i++ {
+        (*g.GetCell(5, i)) = &core.Wire{}
+        (*g.GetCell(5, i)).SetDir(core.NORTH)
+        g.RecountUpdate()
+    }
+    *g.GetCell(5, h-2) = core.Cell(&core.Source{})
+    g.RecountUpdate()
+    for t := 0; t <= 5; t++ {
+        g.Update()
+        // render(g)
+        // time.Sleep(time.Millisecond * 300)
+    }
+    *g.GetCell(1, h-1) = core.Cell(&core.None{})
+    for t := 0; t <= 10; t++ {
+        g.Update()
+        // render(g)
+        // time.Sleep(time.Millisecond * 300)
+    }
+}
+
+func _TestEdges(t *testing.T) {
     g := core.Grid{}
     g.Init(3, 3)
     *g.GetCell(0, 0) = &core.Get{}
     *g.GetCell(2, 2) = &core.Xor{}
     g.Update()
     render(g)
+}
+
+func _TestUpdate(t *testing.T) {
+    g := core.Grid{}
+    g.Init(5, 5)
+    *g.GetCell(3, 4) = &core.Source{}
+    g.RecountUpdate()
+    *g.GetCell(3, 3) = &core.Wire{}
+    g.RecountUpdate()
+    *g.GetCell(3, 2) = &core.Wire{}
+    g.RecountUpdate()
+    for t:=0; t<3; t++ {
+        g.Update()
+    }
 }
 
 func BenchmarkSerpinski(b *testing.B) {
@@ -99,7 +138,7 @@ func BenchmarkSerpinski(b *testing.B) {
     }
     *g.GetCell(1, h-1) = core.Cell(&core.Source{})
     g.RecountUpdate()
-    for t := 0; t <= b.N; t++ {
+    for t := 0; t <= 100; t++ {
         g.Update()
     }
 }
