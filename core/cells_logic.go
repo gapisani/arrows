@@ -54,8 +54,7 @@ func (a Xor) updateQueue() []point {
 }
 func (a *Xor) SetDir(dir Direction) { a.dir = dir }
 
-// When it's not updated probably it doesn't have signal
-func (Xor) Check() bool { return false }
+func (a Xor) Check() bool { return a.lit }
 
 func (a *Xor) Power() {
     a.lcount++
