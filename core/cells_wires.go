@@ -35,72 +35,33 @@ func (a *Wire) Update(grid _lgrid) {
 }
 // ------------
 
-/* Forward-Left Wire */
-type FrwdLeft struct {
+/* Forward-Side Wire */
+type FrwdSide struct {
     lit bool
     dir Direction
 }
 
-func (a FrwdLeft) updateQueue() []point {
-    return []point{
-        dir2point(rotateDir(a.dir, LEFT), point{1,1}),
-        dir2point(a.dir, point{1,1}),
-    }
-}
-func (a FrwdLeft) Dir() Direction { return a.dir }
-
-func (a *FrwdLeft) SetDir(dir Direction) { a.dir = dir }
-
-func (fd FrwdLeft) Check() bool { return fd.lit }
-
-func (fd *FrwdLeft) Power() { fd.lit = true }
-
-// Doesn't forces updates on other cells
-func (FrwdLeft) forcedUpdate() bool { return false }
-
-// Pass signal to a cell that it faced with, as well as on the left side
-//[.][O][.] X - arrow; I - input; O - output
-//[O][X][.]
-//[.][I][.]
-func (a *FrwdLeft) Update(grid _lgrid) {
-    if(!a.lit) { return }
-    p1 := a.updateQueue()[0]
-    p2 := a.updateQueue()[1]
-    cell := grid[p1.x][p1.y]
-    (*cell).Power()
-    cell = grid[p2.x][p2.y]
-    (*cell).Power()
-    a.lit = false
-}
-// ------------
-
-/* Forward-Right Wire */
-type FrwdRight struct {
-    lit bool
-    dir Direction
-}
-
-func (a FrwdRight) updateQueue() []point {
+func (a FrwdSide) updateQueue() []point {
     return []point{
         dir2point(a.dir, point{1,1}),
         dir2point(rotateDir(a.dir, RIGHT), point{1,1}),
     }
 }
 
-func (a FrwdRight) Dir() Direction { return a.dir }
+func (a FrwdSide) Dir() Direction { return a.dir }
 
-func (a *FrwdRight) SetDir(dir Direction) { a.dir = dir }
+func (a *FrwdSide) SetDir(dir Direction) { a.dir = dir }
 
-func (fr FrwdRight) Check() bool {
+func (fr FrwdSide) Check() bool {
     return fr.lit
 }
 
-func (fr *FrwdRight) Power() {
+func (fr *FrwdSide) Power() {
     fr.lit = true
 }
 
 // Doesn't forces updates on other cells
-func (FrwdRight) forcedUpdate() bool {
+func (FrwdSide) forcedUpdate() bool {
     return false
 }
 
@@ -108,7 +69,7 @@ func (FrwdRight) forcedUpdate() bool {
 //[.][O][.] X - arrow; I - input; O - output
 //[.][X][O]
 //[.][I][.]
-func (a *FrwdRight) Update(grid _lgrid) {
+func (a *FrwdSide) Update(grid _lgrid) {
     if(!a.lit) { return }
     p1 := a.updateQueue()[0]
     p2 := a.updateQueue()[1]
