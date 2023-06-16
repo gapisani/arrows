@@ -105,6 +105,8 @@ func (grid *Grid) Update() []Point {
             newUpdate = append(newUpdate, p)
         }
     }
-    grid.updateQueue = newUpdate
+    // Swapping buffers instead of copying
+    grid.updateQueue, newUpdate = newUpdate, grid.updateQueue
+    // Now it returns cells that was updated at this tick
     return newUpdate
 }
