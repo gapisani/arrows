@@ -2,4 +2,4 @@ module wasm
 
 go 1.20
 
-require github.com/gapisani/arrows/core v0.0.0-20230613224948-d517cdf95d2c
+require github.com/gapisani/arrows/core v0.0.0-20230616001052-6a448e186722

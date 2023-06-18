@@ -118,7 +118,11 @@ func main() {
     // GetCell(int x, y) Cell
     js.Global().Set("GetCell", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         cell := grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
-        return cell2js(*cell)
+        if(cell == nil) {
+            return nil
+        } else {
+            return cell2js(*cell)
+        }
     }))
 
     // SetCell(int x, y, cellType celltype, direction)
@@ -142,9 +146,25 @@ func main() {
         return []uint{w, h}
     }))
 
-    // Update()
+    // Update() [[x, y], ...]
     js.Global().Set("Update", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        grid.Update()
+        points := grid.Update()
+        jsArray := js.Global().Get("Array").New(len(points))
+        for i := 0; i < len(points); i++ {
+            subArray := js.Global().Get("Array").New(2)
+            subArray.SetIndex(0, js.ValueOf(points[i].X))
+            subArray.SetIndex(1, js.ValueOf(points[i].Y))
+            jsArray.SetIndex(i, subArray)
+        }
+        return jsArray
+    }))
+
+    // LinkCells(x1, y1, x2, y2)
+    // Links cell at pos1 to pos2
+    js.Global().Set("LinkCells", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        cell := *grid.GetCell(uint(args[0].Int()), uint(args[1].Int()))
+        *grid.GetCell(uint(args[0].Int()), uint(args[1].Int())) = cell
+        *grid.GetCell(uint(args[2].Int()), uint(args[3].Int())) = cell
         return nil
     }))
 
@@ -154,7 +174,7 @@ func main() {
     js.Global().Set("BLOCK",     uint(Block))
     js.Global().Set("CROSS",     uint(Cross))
     js.Global().Set("FLASH",     uint(Flash))
-    js.Global().Set("FRWDSIDE",  uint(FrwdSide))
+    js.Global().Set("FRWD_SIDE", uint(FrwdSide))
     js.Global().Set("GET",       uint(Get))
     js.Global().Set("MEM_CELL",  uint(MemCell))
     js.Global().Set("NONE",      uint(None))

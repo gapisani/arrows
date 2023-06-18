@@ -34,3 +34,5 @@ go.work
 
 .nvimlog
 .vim
+
+wasm-exec.js

@@ -1,0 +1,125 @@
+#posDiv {
+    margin: 25px;
+    pointer-events: none;
+}
+p {
+    position: absolute;
+    font-family: Consolas;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: rgba(200, 200, 200, 0.5);
+    border-radius: 5px;
+    padding: 3px;
+}
+#displayX {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+#displayY {
+    top: 54px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+#typesDiv {
+    position: absolute;
+    left: calc(50% - 177px);
+    bottom: 85px;
+    width: 355px;
+    pointer-events: none;
+}
+img {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(200, 200, 200, 0.5);
+    border: 5px solid rgba(0, 132, 255, 0.5);
+    border-radius: 10px;
+}
+#lbl1, #lbl2, #lbl3, #lbl4, #lbl5 {
+    font-size: 21px;
+    color: rgb(199, 0, 0);
+    font-weight: bolder;
+    top: 20px;
+    background-color: rgba(0, 132, 255, 0.5);
+    height: 18px;
+    border-radius: 5px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
+}
+#lbl1 { left: calc(11% + 2px); }
+#lbl2 { left: calc(31% + 2px); }
+#lbl3 { left: calc(51% + 2px); }
+#lbl4 { left: calc(71% + 2px); }
+#lbl5 { left: calc(91% + 2px); }
+#display1 { left: 10%; }
+#display2 { left: 30%; }
+#display3 { left: 50%; }
+#display4 { left: 70%; }
+#display5 { left: 90%; }
+#displaySpeed {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    pointer-events: none;
+}
+#aboutBtn {
+    width: 30px;
+    height: 30px;
+    right: -10px;
+    margin: 25px;
+    background-color: rgba(200, 200, 200, 0.65);
+    border: 3px solid rgba(0, 0, 0, 0.5);
+}
+#aboutBtn:hover {
+    background-color: rgb(225, 225, 225);
+    border: 4px solid black;
+}
+#aboutBtn:active {
+    background-color: rgb(150, 150, 150);
+    border: 4px solid black;
+}
+#about {
+    position: absolute;
+    width: 75%;
+    height: 400px;
+    left: 12%;
+    top: 50px;
+    background-color: rgb(240, 240, 240);
+    border: 5px solid rgb(0, 132, 255);
+    border-radius: 10px;
+    visibility: hidden;
+}
+#mapInteraction, #arrowsChoosing {
+    position: absolute;
+    background-color: rgb(250, 250, 250);
+    border: 3px solid rgb(0, 132, 255);
+    border-radius: 10px;
+}
+#mapInteraction {
+    left: 10px;
+    top: 45px;
+    width: 40%;
+    height: 150px;
+}
+#albl0, #albl1, #albl2, #albl3, #albl4, #albl5, #albl6, #albl7, #albl8, #albl9, #albl10 {
+    position: absolute;
+    background-color: transparent;
+}
+#albl1, #albl6 {
+    font-size: 25px;
+    font-weight: bold;
+}
+#albl2, #albl3, #albl4, #albl5, #albl7, #albl8, #albl9, #albl10 {
+    font-size: 20px;
+    font-weight: normal;
+}
+#albl0 {
+    font-weight: bolder;
+    font-size: 30px;
+    top: -25px;
+    left: calc(50% - 25px);
+}
+#albl1 {
+    left: calc(50% - 100px);
+    top: -25px
+}

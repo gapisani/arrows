@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Arrows</title>
+        <link rel="icon" href="imgs/not.png">
+        <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    </head>
+    <body style="overflow-x: hidden; overflow-y: hidden;">
+        <div>
+            <div id="posDiv">
+                <p id="displayX">X: 0</p>
+                <p id="displayY">Y: 0</p>
+            </div>
+            <div id="typesDiv">
+                <img id="display1" src="imgs/wire.png"/>
+                <p id="lbl1">1</p>
+                <img id="display2" src="imgs/frwdleft.png"/>
+                <p id="lbl2">2</p>
+                <img id="display3" src="imgs/frwdright.png"/>
+                <p id="lbl3">3</p>
+                <img id="display4" src="imgs/cross.png"/>
+                <p id="lbl4">4</p>
+                <img id="display5" src="imgs/angled.png"/>
+                <p id="lbl5">5</p>
+            </div>
+            <p id="displaySpeed">250ms</p>
+            <div id="about">
+                <p id="albl0">Controls</p>
+                <div id="mapInteraction">
+                    <p id="albl1">Map Interaction</p>
+                    <p id="albl2">LMB — Set Arrow</p>
+                    <p id="albl3">RMB — Remove Arrow</p>
+                    <p id="albl4">Shift+LMB(in future) / WASD — Movement</p>
+                    <p id="albl5">Shift+MW — Scale Change</p>
+                </div>
+                <div id="arrowsChoosing">
+                    <p id="albl6">Arrows Choosing</p>
+                    <p id="albl7">keys '1'&'2'&'3'&'4'&'5' - Choose Arrow</p>
+                    <p id="albl8">MW / keys 'X'&'Z' - Choose Package</p>
+                    <p id="albl9">keys 'Q'&'E' / keyboard arrows - Choose Direction</p>
+                </div>
+                <p id="albl10">Ctrl+MW / keys '='&'-' — Speed</p>
+            </div>
+            <img id="aboutBtn" src="imgs/unknown.png" onclick="showAbout()"/>
+            <canvas id="canvas">Error: Canvas is not supported by your browser</canvas>
+            <div id="load_alert">Map is loading...<br>(If it's took too long, check console)</div>
+        </div>
+
+        <script src="js/wasm_exec.js"></script>
+        <script>
+            const go = new Go();
+            WebAssembly.instantiateStreaming(fetch("build.wasm"), go.importObject).then((result) => {
+                go.run(result.instance);
+
+                let scripts = ["js/control.js", "js/update.js", "js/gui.js", "js/main.js"];
+                for(let i = 0; i < scripts.length; i++) {
+                    var script = document.createElement("script");
+                    script.src = scripts[i];
+                    document.body.appendChild(script);
+                }
+            })
+        </script>
+    </body>
+</html>
