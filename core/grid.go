@@ -51,11 +51,12 @@ func (grid *Grid) RecountUpdate() {
 }
 
 func (grid *Grid) updateQueueClean() {
-    encountered := map[Point]bool{}
+    // Using integer in hashtable is better for perfomance
+    encountered := map[uint]bool{}
     cells := []Point{}
     for _, v := range grid.updateQueue {
-        if !encountered[v] {
-            encountered[v] = true
+        if !encountered[v.Y * grid.height + v.X] {
+            encountered[v.Y * grid.height + v.X] = true
             cells = append(cells, v)
         }
     }

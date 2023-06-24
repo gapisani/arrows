@@ -29,7 +29,7 @@ func (None) forcedUpdate() bool {
 }
 
 func (None) Dir() Direction { return NORTH }
-func (None) SetDir(dir Direction) { }
+func (None) SetDir(Direction) { }
 
 func (None) Power() {}
 func (None) Check() bool { return false }
@@ -49,7 +49,7 @@ func (a Source) updateQueue() []Point {
 }
 func (a Source) Dir() Direction { return NORTH }
 
-func (Source) SetDir(dir Direction) { }
+func (Source) SetDir(Direction) { }
 
 func (Source) Check() bool { return true }
 
@@ -70,33 +70,33 @@ func (a *Source) Update(grid _lgrid) {
 
 /* Memory Cell */
 type MemCell struct {
-    dir Direction
-    state bool    // State -> On/Off
+    Direction Direction
+    State bool    // State -> On/Off
 }
 func (a MemCell) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 
-func (a MemCell) Dir() Direction { return a.dir }
+func (a MemCell) Dir() Direction { return a.Direction }
 
-func (a *MemCell) SetDir(dir Direction) { a.dir = dir }
+func (a *MemCell) SetDir(dir Direction) { a.Direction = dir }
 
-func (mc MemCell) Check() bool { return mc.state }
+func (mc MemCell) Check() bool { return mc.State }
 
 // Depends, it could work as source
 func (mc MemCell) forcedUpdate() bool {
-    return mc.state
+    return mc.State
 }
 
 func (mc *MemCell) Power() {
-    mc.state = !mc.state
+    mc.State = !mc.State
 }
 
 // Works as source that can be turned off or on
 func (a *MemCell) Update(grid _lgrid) {
-    if(!a.state) {return}
+    if(!a.State) {return}
     p := a.updateQueue()[0]
     cell := grid[p.X][p.Y]
     (*cell).Power()
@@ -105,11 +105,11 @@ func (a *MemCell) Update(grid _lgrid) {
 
 /* Flash */
 type Flash struct {
-    used bool
+    Used bool
 }
 
 // Same as memcell
-func (f Flash) forcedUpdate() bool { return !f.used}
+func (f Flash) forcedUpdate() bool { return !f.Used}
 
 func (a Flash) updateQueue() []Point {
     return []Point{
@@ -126,12 +126,12 @@ func (Flash) Dir() Direction { return NORTH }
 
 func (Flash) SetDir(Direction) {}
 
-func (f Flash) Check() bool { return !f.used }
+func (f Flash) Check() bool { return !f.Used }
 
 func (flash *Flash) Update(grid _lgrid) {
-    if(flash.used) {
+    if(flash.Used) {
         return
-    } else { flash.used = true }
+    } else { flash.Used = true }
     for _, p := range(flash.updateQueue()) {
         (*grid[p.X][p.Y]).Power()
     }
@@ -140,18 +140,18 @@ func (flash *Flash) Update(grid _lgrid) {
 
 /* Get */
 type Get struct {
-    dir Direction
-    state bool
+    Direction Direction
+    State bool
 }
 
-func (a Get) Dir() Direction { return a.dir }
-func (a *Get) SetDir(dir Direction) { a.dir = dir }
-func (g Get) Check() bool { return g.state }
+func (a Get) Dir() Direction { return a.Direction }
+func (a *Get) SetDir(dir Direction) { a.Direction = dir }
+func (g Get) Check() bool { return g.State }
 func (Get) Power() {}
 
 func (a Get) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 
@@ -159,16 +159,16 @@ func (a Get) updateQueue() []Point {
 func (Get) forcedUpdate() bool { return true }
 
 func (get *Get) Update(grid _lgrid) {
-    p1 := dir2point(rotateDir(get.dir, BACK), Point{1, 1})
+    p1 := dir2point(rotateDir(get.Direction, BACK), Point{1, 1})
     b1 := grid[p1.X][p1.Y]
-    if(get.state) {
+    if(get.State) {
         p2 := get.updateQueue()[0]
         b2 := grid[p2.X][p2.Y]
         (*b2).Power()
-        get.state = false
+        get.State = false
     }
     if((*b1).Check()) {
-        get.state = true
+        get.State = true
     }
 }
 // ------------
@@ -176,62 +176,60 @@ func (get *Get) Update(grid _lgrid) {
 
 // Random
 type Random struct {
-    dir Direction
-    lit uint8
+    Direction Direction
+    Lit uint8
 }
 
 func (a *Random) Update(g _lgrid) {
-    switch a.lit {
+    switch a.Lit {
     case 0:
         return
-    case 1:
-        a.lit = 0
     case 2:
         p := a.updateQueue()[0]
         (*g[p.X][p.Y]).Power()
-        a.lit = 0
     }
+    a.Lit = 0
 }
 
 func (Random) forcedUpdate() bool {
     return false
 }
 
-func (a Random) Dir() Direction { return a.dir }
-func (a *Random) SetDir(dir Direction) { a.dir = dir }
+func (a Random) Dir() Direction { return a.Direction }
+func (a *Random) SetDir(dir Direction) { a.Direction = dir }
 
 func (a *Random) Power() {
-    a.lit = uint8(rand.Int()) % 2
+    a.Lit = uint8(rand.Int()) % 2
 }
 func (a Random) Check() bool {
-    return a.lit == 2
+    return a.Lit == 2
 }
 func (a Random) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 //-----------
 
 /* Double Memory Cell */
 type DoubleMemCell struct {
-    dir Direction
+    Direction Direction
     lcount uint
-    state bool    // State -> On/Off
+    State bool    // State -> On/Off
 }
 func (a DoubleMemCell) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 
-func (a DoubleMemCell) Dir() Direction { return a.dir }
+func (a DoubleMemCell) Dir() Direction { return a.Direction }
 
-func (a *DoubleMemCell) SetDir(dir Direction) { a.dir = dir }
+func (a *DoubleMemCell) SetDir(dir Direction) { a.Direction = dir }
 
-func (a DoubleMemCell) Check() bool { return a.state }
+func (a DoubleMemCell) Check() bool { return a.State }
 
-func (a DoubleMemCell) forcedUpdate() bool { return a.state }
+func (a DoubleMemCell) forcedUpdate() bool { return a.State }
 
 func (a *DoubleMemCell) Power() {
     a.lcount++
@@ -239,15 +237,15 @@ func (a *DoubleMemCell) Power() {
 
 // Works as source that can be turned off or on
 func (a *DoubleMemCell) Update(grid _lgrid) {
-    if(a.state) {
+    if(a.State) {
         p := a.updateQueue()[0]
         cell := grid[p.X][p.Y]
         (*cell).Power()
     }
     if(a.lcount >= 2) {
-        a.state = true
-    } else if(a.state && a.lcount == 1) {
-        a.state = false
+        a.State = true
+    } else if(a.State && a.lcount == 1) {
+        a.State = false
     }
     a.lcount = 0
 }

@@ -4,7 +4,7 @@ type Point struct {
     X, Y uint
 }
 
-type Direction uint
+type Direction uint8
 const (
     NORTH Direction = iota
     EAST
@@ -12,7 +12,7 @@ const (
     WEST
 )
 
-type LDirection uint
+type LDirection uint8
 const (
     RIGHT LDirection = iota
     LEFT

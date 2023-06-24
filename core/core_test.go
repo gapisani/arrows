@@ -2,8 +2,9 @@ package core_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
-    "strings"
+
 	// "time"
 
 	"github.com/gapisani/arrows/core"

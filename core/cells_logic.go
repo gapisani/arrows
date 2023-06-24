@@ -3,7 +3,7 @@ package core
 /* Not */
 type Not struct {
     dir Direction
-    lit bool
+    Lit bool
 }
 
 func (a Not) Dir() Direction { return a.dir }
@@ -17,23 +17,20 @@ func (a *Not) SetDir(dir Direction) { a.dir = dir }
 
 func (a Not) forcedUpdate() bool { return true }
 
-func (a Not) Check() bool { return a.lit }
+func (a Not) Check() bool { return a.Lit }
 
-func (Not) Power() {}
+func (a *Not) Power() {
+    a.Lit = false
+}
 
 func (not *Not) Update(grid _lgrid) {
     // p1 -[NOT]-> p2
-    p1 := dir2point(rotateDir(not.dir, BACK), Point{1, 1})
-    p2 := not.updateQueue()[0]
+    p := not.updateQueue()[0]
 
-    b1 := grid[p1.X][p1.Y]
-    b2 := grid[p2.X][p2.Y]
-    if(not.lit) {
-        (*b2).Power()
-        not.lit = true
-    }
-    if(!(*b1).Check()) {
-        not.lit = true
+    b := grid[p.X][p.Y]
+    if(not.Lit) {
+        (*b).Power()
+        not.Lit = true
     }
 }
 // ------------
@@ -41,7 +38,7 @@ func (not *Not) Update(grid _lgrid) {
 /* Xor */
 type Xor struct {
     dir Direction
-    lit bool
+    Lit bool
     lcount uint
 }
 
@@ -54,14 +51,14 @@ func (a Xor) updateQueue() []Point {
 }
 func (a *Xor) SetDir(dir Direction) { a.dir = dir }
 
-func (a Xor) Check() bool { return a.lit }
+func (a Xor) Check() bool { return a.Lit }
 
 func (a *Xor) Power() {
     a.lcount++
     if(a.lcount == 1) {
-        a.lit = true
+        a.Lit = true
     } else {
-        a.lit = false
+        a.Lit = false
     }
 }
 
@@ -70,9 +67,9 @@ func (Xor) forcedUpdate() bool { return false }
 func (xor *Xor) Update(grid _lgrid) {
     rp := xor.updateQueue()[0]
     rb := grid[rp.X][rp.Y]
-    if(xor.lit) {
+    if(xor.Lit) {
         (*rb).Power()
-        xor.lit = false
+        xor.Lit = false
     }
     xor.lcount = 0
 }
@@ -81,7 +78,7 @@ func (xor *Xor) Update(grid _lgrid) {
 /* And */
 type And struct {
     dir Direction
-    lit bool
+    Lit bool
     lcount uint
 }
 
@@ -90,7 +87,7 @@ func (a And) updateQueue() []Point {
         dir2point(a.dir, Point{1, 1}),
     }
 }
-func (a And) Check() bool { return a.lit }
+func (a And) Check() bool { return a.Lit }
 
 func (a And) Dir() Direction { return a.dir }
 
@@ -99,7 +96,7 @@ func (a *And) SetDir(dir Direction) { a.dir = dir }
 func (a *And) Power() {
     a.lcount++
     if(a.lcount >= 2) {
-        a.lit = true
+        a.Lit = true
     }
 }
 
@@ -108,9 +105,9 @@ func (And) forcedUpdate() bool { return false }
 func (and *And) Update(grid _lgrid) {
     rp := and.updateQueue()[0]
     rb := grid[rp.X][rp.Y]
-    if(and.lit) {
+    if(and.Lit) {
         (*rb).Power()
-        and.lit = false
+        and.Lit = false
     }
     and.lcount = 0
 }
@@ -119,7 +116,7 @@ func (and *And) Update(grid _lgrid) {
 /* Block */
 type Block struct {
     dir Direction
-    lit bool
+    Lit bool
 }
 // TODO: redo logic
 
@@ -133,7 +130,7 @@ func (a Block) Dir() Direction { return a.dir }
 
 func (a *Block) SetDir(dir Direction) { a.dir = dir }
 
-func (a Block) Check() bool { return a.lit}
+func (a Block) Check() bool { return a.Lit}
 func (Block) Power() {}
 func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid _lgrid) {
@@ -143,17 +140,17 @@ func (block *Block) Update(grid _lgrid) {
     p2 := block.updateQueue()[0]
     b1 := grid[p1.X][p1.Y]
     b2 := grid[p2.X][p2.Y]
-    if(block.lit) {
+    if(block.Lit) {
         switch t := (*b2).(type) {
         case *Wire:
-            t.lit = false
+            t.Lit = false
         case *MemCell:
-            t.state = false
+            t.State = false
         }
-        block.lit = false
+        block.Lit = false
     }
     if((*b1).Check()) {
-        block.lit = true
+        block.Lit = true
     }
 }
 // ------------
