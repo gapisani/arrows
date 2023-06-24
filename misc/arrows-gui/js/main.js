@@ -76,7 +76,8 @@ const minDelay = 10, maxDelay = 650, delayChange = 10;
 
 const minScale = 10, maxScale = 100, scaleChange = 5;
 
-const biasX = document.querySelector('canvas').offsetLeft, biasY = document.querySelector('canvas').offsetTop;
+const biasX = document.querySelector('canvas').offsetLeft,
+      biasY = document.querySelector('canvas').offsetTop;
 
 var lastPreX = 0, lastPreY = 0;
 

@@ -1,6 +1,5 @@
 function initCore() {
     GridInit(width, height);
-    // for(var y = 0; y < height; y++) { for(var x = 0; x < width; x++) { SetCell(x, y, NONE, 0); } }
     Update();
     for(y = 0; y < height; y++) {
         for(x = 0; x < width; x++) {
@@ -11,7 +10,7 @@ function initCore() {
 
     updateLoop();
 
-    document.getElementById('load_alert').style.visibility = 'hidden';
+    document.getElementById('load_alert').style.display = 'none';
 
     canvas.onmousedown = function(e) { canvasMouseDown(e); }
 }
