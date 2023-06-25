@@ -1,10 +1,10 @@
 package main
 
 import (
-	"reflect"
-	"syscall/js"
+    "reflect"
+    "syscall/js"
 
-	"github.com/gapisani/arrows/core"
+    "github.com/gapisani/arrows/core"
 )
 
 var (
@@ -35,6 +35,8 @@ const (
 // Enum
 func cell2type(cell core.Cell) CellType {
     switch cell.(type) {
+    case *core.None:
+        return None
     case *core.And:
         return And
     case *core.Angled:
@@ -51,8 +53,6 @@ func cell2type(cell core.Cell) CellType {
         return Get
     case *core.MemCell:
         return MemCell
-    case *core.None:
-        return None
     case *core.Not:
         return Not
     case *core.Source:
@@ -61,6 +61,12 @@ func cell2type(cell core.Cell) CellType {
         return Wire
     case *core.Xor:
         return Xor
+    case *core.DoubleMemCell:
+        return DoubleMemCell
+    case *core.Random:
+        return Random
+    case *core.Double:
+        return Double
     default:
         return Unknown
     }
@@ -68,6 +74,8 @@ func cell2type(cell core.Cell) CellType {
 
 func type2cell(cellType CellType) core.Cell {
     switch cellType {
+    case None:
+        return &core.None{}
     case And:
         return &core.And{}
     case Angled:
@@ -84,8 +92,6 @@ func type2cell(cellType CellType) core.Cell {
         return &core.Get{}
     case MemCell:
         return &core.MemCell{}
-    case None:
-        return &core.None{}
     case Not:
         return &core.Not{}
     case Source:
@@ -94,6 +100,12 @@ func type2cell(cellType CellType) core.Cell {
         return &core.Wire{}
     case Xor:
         return &core.Xor{}
+    case DoubleMemCell:
+        return &core.DoubleMemCell{}
+    case Random:
+        return &core.Random{}
+    case Double:
+        return &core.Double{}
     default:
         return nil
     }
@@ -176,14 +188,14 @@ func main() {
     js.Global().Set("BLOCK", uint(Block))
     js.Global().Set("CROSS", uint(Cross))
     js.Global().Set("FLASH", uint(Flash))
-    js.Global().Set("FRWDSIDE", uint(FrwdSide))
+    js.Global().Set("FRWD_SIDE", uint(FrwdSide))
     js.Global().Set("GET", uint(Get))
-    js.Global().Set("MEMCELL", uint(MemCell))
+    js.Global().Set("MEM_CELL", uint(MemCell))
     js.Global().Set("NOT", uint(Not))
     js.Global().Set("SOURCE", uint(Source))
     js.Global().Set("WIRE", uint(Wire))
     js.Global().Set("XOR", uint(Xor))
-    js.Global().Set("DOUBLEMEMCELL", uint(DoubleMemCell))
+    js.Global().Set("DOUBLE_MEMCELL", uint(DoubleMemCell))
     js.Global().Set("RANDOM", uint(Random))
     js.Global().Set("DOUBLE", uint(Double))
     js.Global().Set("UNKNOWN", uint(Unknown))
