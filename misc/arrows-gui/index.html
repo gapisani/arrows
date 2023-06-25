@@ -32,7 +32,7 @@
                 <div class="button_number">
                     <p>2</p>
                 </div>
-                <img id="display2" src="imgs/frwdleft.png"/>
+                <img id="display2" src="imgs/frwdside.png"/>
                 <div class="button_frame"></div>
             </div>
 
@@ -40,7 +40,7 @@
                 <div class="button_number">
                     <p>3</p>
                 </div>
-                <img id="display3" src="imgs/frwdright.png"/>
+                <img id="display3" src="imgs/cross.png"/>
                 <div class="button_frame"></div>
             </div>
 
@@ -48,7 +48,7 @@
                 <div class="button_number">
                     <p>4</p>
                 </div>
-                <img id="display4" src="imgs/cross.png"/>
+                <img id="display4" src="imgs/unknown.png"/>
                 <div class="button_frame"></div>
             </div>
 
@@ -61,7 +61,7 @@
             </div>
 
             <div class="ttt">
-                
+
             </div>
         </div>
 
@@ -98,12 +98,19 @@
             go.run(result.instance);
 
             let scripts = ["js/control.js", "js/update.js", "js/gui.js", "js/main.js"];
-            for(let i = 0; i < scripts.length; i++) {
-                var script = document.createElement("script");
-                script.src = scripts[i];
-                document.body.appendChild(script);
+            function loadScriptsSequentially(scriptList, index) {
+                if (index >= scriptList.length) {
+                    return;
+                }
+                var script = document.createElement('script');
+                script.src = scriptList[index];
+                script.onload = function() {
+                    loadScriptsSequentially(scriptList, index + 1);
+                };
+                document.head.appendChild(script);
             }
-        })
+            loadScriptsSequentially(scripts, 0);
+        });
     </script>
 </body>
 </html>

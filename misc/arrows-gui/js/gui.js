@@ -1,5 +1,5 @@
 function drawCell(x, y, type, dir, lit) {
-    context.fillStyle = lit? fillStyle : 'white';
+    context.fillStyle = lit? colors[type] : 'white';
     context.fillRect(x * scale, y * scale, scale, scale);
 
     if(type != NONE && images[type] !== undefined && images[type] != null) {

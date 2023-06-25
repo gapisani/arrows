@@ -14,6 +14,7 @@ cameraY2 = (cameraY2 > height? height : cameraY2);
 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
+context.imageSmoothingEnabled = false;
 
 const fillStyle = 'rgb(203, 0, 0)';
 
@@ -32,14 +33,46 @@ images[ANGLED]    = new Image(); images[ANGLED].src    = 'imgs/angled.png';
 images[BLOCK]     = new Image(); images[BLOCK].src     = 'imgs/block.png';
 images[CROSS]     = new Image(); images[CROSS].src     = 'imgs/cross.png';
 images[FLASH]     = new Image(); images[FLASH].src     = 'imgs/flash.png';
-images[FRWD_SIDE] = new Image(); images[FRWD_SIDE].src = 'imgs/frwdright.png';
+images[FRWD_SIDE] = new Image(); images[FRWD_SIDE].src = 'imgs/frwdside.png';
 images[GET]       = new Image(); images[GET].src       = 'imgs/get.png';
 images[MEM_CELL]  = new Image(); images[MEM_CELL].src  = 'imgs/memcell.png';
 images[NOT]       = new Image(); images[NOT].src       = 'imgs/not.png';
 images[SOURCE]    = new Image(); images[SOURCE].src    = 'imgs/source.png';
 images[WIRE]      = new Image(); images[WIRE].src      = 'imgs/wire.png';
 images[XOR]       = new Image(); images[XOR].src       = 'imgs/xor.png';
+images[DOUBLE]    = new Image(); images[DOUBLE].src    = 'imgs/double.png';
 images[UNKNOWN]   = new Image(); images[UNKNOWN].src   = 'imgs/unknown.png';
+
+var colors = {};
+
+Object.keys(images).forEach(function(img) {
+    const x = 0,
+          y = 31;
+    if(img != NONE) {
+        images[img].onload = function() {
+            const index = y * (images[img].width * 4) + x * 4;
+            var canvas = document.createElement('canvas');
+            canvas.width = images[img].width;
+            canvas.height = images[img].height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(images[img], 0, 0);
+
+            var data = ctx.getImageData(0, 0, images[img].width, images[img].height);
+            var red = data.data[index];
+            var green = data.data[index+1];
+            var blue = data.data[index+2];
+
+            colors[img] = 'rgb('+red+','+green+','+blue+')';
+            console.log(colors[img]);
+
+            data.data[index+3] = 0;
+            ctx.putImageData(data, 0, 0);
+            images[img].src = canvas.toDataURL();
+            images[img].onload = function(){};
+        }
+    }
+});
+
 
 var packs = {};
 packs[0] = [
@@ -47,7 +80,7 @@ packs[0] = [
     FRWD_SIDE,
     ANGLED,
     CROSS,
-    NONE,
+    DOUBLE,
 ];
 
 packs[1] = [
