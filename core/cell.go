@@ -49,11 +49,11 @@ func (a Source) updateQueue() []Point {
 }
 func (a Source) Dir() Direction { return NORTH }
 
-func (Source) SetDir(Direction) { }
+func (Source) SetDir(Direction) { return }
 
 func (Source) Check() bool { return true }
 
-func (Source) Power() {}
+func (Source) Power() { return }
 
 // Updates other cells
 func (Source) forcedUpdate() bool {
@@ -109,7 +109,7 @@ type Flash struct {
 }
 
 // Same as memcell
-func (f Flash) forcedUpdate() bool { return !f.Used}
+func (f Flash) forcedUpdate() bool { return !f.Used }
 
 func (a Flash) updateQueue() []Point {
     return []Point{
@@ -229,7 +229,7 @@ func (a *DoubleMemCell) SetDir(dir Direction) { a.Direction = dir }
 
 func (a DoubleMemCell) Check() bool { return a.State }
 
-func (a DoubleMemCell) forcedUpdate() bool { return a.State }
+func (a DoubleMemCell) forcedUpdate() bool { return a.lcount != 0 }
 
 func (a *DoubleMemCell) Power() {
     a.lcount++

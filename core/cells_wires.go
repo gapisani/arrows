@@ -164,7 +164,7 @@ func (a *Angled) Update(grid _lgrid) {
 
 // Double
 type Double struct {
-    dir Direction
+    Direction Direction
     Lit uint8
 }
 
@@ -181,22 +181,25 @@ func (a *Double) Update(g _lgrid) {
     }
 }
 
-func (Double) forcedUpdate() bool {
-    return false
+func (a Double) forcedUpdate() bool {
+    return a.Lit == 1
 }
 
-func (a Double) Dir() Direction { return a.dir }
-func (a *Double) SetDir(dir Direction) { a.dir = dir }
+func (a Double) Dir() Direction { return a.Direction }
+func (a *Double) SetDir(dir Direction) { a.Direction = dir }
 
 func (a *Double) Power() {
-    a.Lit = 1
+    if(a.Lit == 0) {
+        a.Lit = 1
+    }
 }
 func (a Double) Check() bool {
     return a.Lit == 2
 }
+
 func (a Double) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 //-----------
