@@ -147,7 +147,9 @@ type Get struct {
 func (a Get) Dir() Direction { return a.Direction }
 func (a *Get) SetDir(dir Direction) { a.Direction = dir }
 func (g Get) Check() bool { return g.State }
-func (Get) Power() {}
+func (a *Get) Power() {
+    a.State = true
+}
 
 func (a Get) updateQueue() []Point {
     return []Point{

@@ -2,25 +2,25 @@ package core
 
 /* Not */
 type Not struct {
-    dir Direction
+    Direction Direction
     Lit bool
 }
 
-func (a Not) Dir() Direction { return a.dir }
+func (a Not) Dir() Direction { return a.Direction }
 
 func (a Not) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
-func (a *Not) SetDir(dir Direction) { a.dir = dir }
+func (a *Not) SetDir(dir Direction) { a.Direction = dir }
 
 func (a Not) forcedUpdate() bool { return true }
 
-func (a Not) Check() bool { return a.Lit }
+func (a Not) Check() bool { return !a.Lit }
 
 func (a *Not) Power() {
-    a.Lit = false
+    a.Lit = true
 }
 
 func (not *Not) Update(grid _lgrid) {
@@ -28,28 +28,27 @@ func (not *Not) Update(grid _lgrid) {
     p := not.updateQueue()[0]
 
     b := grid[p.X][p.Y]
-    if(not.Lit) {
+    if(!not.Lit) {
         (*b).Power()
-        not.Lit = true
     }
 }
 // ------------
 
 /* Xor */
 type Xor struct {
-    dir Direction
+    Direction Direction
     Lit bool
     lcount uint
 }
 
-func (a Xor) Dir() Direction { return a.dir }
+func (a Xor) Dir() Direction { return a.Direction }
 
 func (a Xor) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
-func (a *Xor) SetDir(dir Direction) { a.dir = dir }
+func (a *Xor) SetDir(dir Direction) { a.Direction = dir }
 
 func (a Xor) Check() bool { return a.Lit }
 
@@ -77,21 +76,23 @@ func (xor *Xor) Update(grid _lgrid) {
 
 /* And */
 type And struct {
-    dir Direction
+    Direction Direction
     Lit bool
+
+    // lcount isn't global because it's temporary state and should be reseted every tick any way
     lcount uint
 }
 
 func (a And) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1, 1}),
+        dir2point(a.Direction, Point{1, 1}),
     }
 }
 func (a And) Check() bool { return a.Lit }
 
-func (a And) Dir() Direction { return a.dir }
+func (a And) Dir() Direction { return a.Direction }
 
-func (a *And) SetDir(dir Direction) { a.dir = dir }
+func (a *And) SetDir(dir Direction) { a.Direction = dir }
 
 func (a *And) Power() {
     a.lcount++
@@ -115,20 +116,20 @@ func (and *And) Update(grid _lgrid) {
 
 /* Block */
 type Block struct {
-    dir Direction
+    Direction Direction
     Lit bool
 }
 // TODO: redo logic
 
 func (a Block) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1,1}),
+        dir2point(a.Direction, Point{1,1}),
     }
 }
 
-func (a Block) Dir() Direction { return a.dir }
+func (a Block) Dir() Direction { return a.Direction }
 
-func (a *Block) SetDir(dir Direction) { a.dir = dir }
+func (a *Block) SetDir(dir Direction) { a.Direction = dir }
 
 func (a Block) Check() bool { return a.Lit}
 func (Block) Power() {}
@@ -136,7 +137,7 @@ func (Block) forcedUpdate() bool { return false }
 func (block *Block) Update(grid _lgrid) {
     // FIXME: This version of block won't handle Cross, Angled, etc
     //  p1 -[block]?-> p2
-    p1 := dir2point(rotateDir(block.dir, BACK), Point{1,1})
+    p1 := dir2point(rotateDir(block.Direction, BACK), Point{1,1})
     p2 := block.updateQueue()[0]
     b1 := grid[p1.X][p1.Y]
     b2 := grid[p2.X][p2.Y]

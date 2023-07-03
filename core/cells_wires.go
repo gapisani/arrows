@@ -2,15 +2,15 @@ package core
 
 /* Wire */
 type Wire struct {
-    dir Direction
+    Direction Direction
     Lit bool
 }
 
-func (a Wire) Dir() Direction { return a.dir }
-func (a *Wire) SetDir(dir Direction) { a.dir = dir }
+func (a Wire) Dir() Direction { return a.Direction }
+func (a *Wire) SetDir(dir Direction) { a.Direction = dir }
 func (a Wire) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1,1}),
+        dir2point(a.Direction, Point{1,1}),
     }
 }
 
@@ -38,19 +38,19 @@ func (a *Wire) Update(grid _lgrid) {
 /* Forward-Side Wire */
 type FrwdSide struct {
     Lit bool
-    dir Direction
+    Direction Direction
 }
 
 func (a FrwdSide) updateQueue() []Point {
     return []Point{
-        dir2point(a.dir, Point{1,1}),
-        dir2point(rotateDir(a.dir, RIGHT), Point{1,1}),
+        dir2point(a.Direction, Point{1,1}),
+        dir2point(rotateDir(a.Direction, RIGHT), Point{1,1}),
     }
 }
 
-func (a FrwdSide) Dir() Direction { return a.dir }
+func (a FrwdSide) Dir() Direction { return a.Direction }
 
-func (a *FrwdSide) SetDir(dir Direction) { a.dir = dir }
+func (a *FrwdSide) SetDir(dir Direction) { a.Direction = dir }
 
 func (fr FrwdSide) Check() bool {
     return fr.Lit
@@ -84,14 +84,14 @@ func (a *FrwdSide) Update(grid _lgrid) {
 /* Cross Wire */
 type Cross struct {
     Lit bool
-    dir Direction
+    Direction Direction
 }
 
 func (a Cross) updateQueue() []Point {
     return []Point{
-        dir2point(rotateDir(a.dir, LEFT), Point{1,1}),
-        dir2point(a.dir, Point{1,1}),
-        dir2point(rotateDir(a.dir, RIGHT), Point{1,1}),
+        dir2point(rotateDir(a.Direction, LEFT), Point{1,1}),
+        dir2point(a.Direction, Point{1,1}),
+        dir2point(rotateDir(a.Direction, RIGHT), Point{1,1}),
     }
 }
 
@@ -103,19 +103,15 @@ func (c *Cross) Power() {
     c.Lit = true
 }
 
-func (a Cross) Dir() Direction { return a.dir }
+func (a Cross) Dir() Direction { return a.Direction }
 
-func (a *Cross) SetDir(dir Direction) { a.dir = dir }
+func (a *Cross) SetDir(dir Direction) { a.Direction = dir }
 
 // Doesn't forces updates on other cells
 func (Cross) forcedUpdate() bool {
     return false
 }
 
-// Pass signal to a cell that it faced with, as well as on the left and right side
-//[.][O][.] X - arrow; I - input; O - output
-//[O][X][O]
-//[.][I][.]
 func (a *Cross) Update(grid _lgrid) {
     if(!a.Lit) { return }
     for _, p := range(a.updateQueue()) {
@@ -125,25 +121,67 @@ func (a *Cross) Update(grid _lgrid) {
 }
 // ------------
 
+/* Two Sides */
+// <->
+type TwoSides struct {
+    Lit bool
+    Direction Direction
+}
+
+func (a TwoSides) updateQueue() []Point {
+    return []Point{
+        dir2point(rotateDir(a.Direction, LEFT), Point{1,1}),
+        dir2point(rotateDir(a.Direction, RIGHT), Point{1,1}),
+    }
+}
+
+func (c TwoSides) Check() bool {
+    return c.Lit
+}
+
+func (c *TwoSides) Power() {
+    c.Lit = true
+}
+
+func (a TwoSides) Dir() Direction { return a.Direction }
+
+func (a *TwoSides) SetDir(dir Direction) { a.Direction = dir }
+
+// Doesn't forces updates on other cells
+func (TwoSides) forcedUpdate() bool {
+    return false
+}
+
+func (a *TwoSides) Update(grid _lgrid) {
+    if(!a.Lit) { return }
+    for _, p := range(a.updateQueue()) {
+        (*grid[p.X][p.Y]).Power()
+    }
+    a.Lit = false
+}
+// ------------
+
+
 /* Angled Wire */
 type Angled struct {
     Lit bool
-    dir Direction
+    Direction Direction
 }
 
 func (a Angled) Check() bool { return a.Lit }
 
 func (a *Angled) Power() { a.Lit = true }
 
-func (a Angled) Dir() Direction { return a.dir }
+func (a Angled) Dir() Direction { return a.Direction }
 
-func (a *Angled) SetDir(dir Direction) { a.dir = dir }
+func (a *Angled) SetDir(dir Direction) { a.Direction = dir }
 
 // Doesn't forces updates on other cells
 func (Angled) forcedUpdate() bool { return false }
 func (a Angled) updateQueue() []Point {
     return []Point{
-        dir2point(rotateDir(a.dir, LEFT), dir2point(a.dir, Point{1,1})),
+        dir2point(rotateDir(a.Direction, LEFT),
+        dir2point(a.Direction, Point{1,1})),
     }
 }
 
