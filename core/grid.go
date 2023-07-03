@@ -50,6 +50,10 @@ func (grid *Grid) RecountUpdate() {
     grid.updateQueueClean()
 }
 
+func (grid Grid) UpdateQueue() []Point {
+    return grid.updateQueue
+}
+
 func (grid *Grid) updateQueueClean() {
     // Using integer in hashtable is better for perfomance
     encountered := map[uint]bool{}
