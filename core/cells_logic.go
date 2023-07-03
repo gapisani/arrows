@@ -30,8 +30,8 @@ func (not *Not) Update(grid _lgrid) {
     b := grid[p.X][p.Y]
     if(!not.Lit) {
         (*b).Power()
-        not.Lit = true
     }
+    not.Lit = false
 }
 // ------------
 
