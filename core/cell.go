@@ -14,7 +14,7 @@ type Cell interface {
     Power()
     Dir() Direction
     SetDir(Direction)
-    updateQueue() []Point
+    UpdateQueue() []Point
 }
 
 /* Empty cell */
@@ -33,13 +33,13 @@ func (None) SetDir(Direction) { }
 
 func (None) Power() {}
 func (None) Check() bool { return false }
-func (None) updateQueue() []Point { return []Point{} }
+func (None) UpdateQueue() []Point { return []Point{} }
 // ------------
 
 /* Source */
 type Source struct {}
 
-func (a Source) updateQueue() []Point {
+func (a Source) UpdateQueue() []Point {
     return []Point{
         dir2point(NORTH, Point{1, 1}),
         dir2point(EAST,  Point{1, 1}),
@@ -62,7 +62,7 @@ func (Source) forcedUpdate() bool {
 
 // Powers the next cell
 func (a *Source) Update(grid _lgrid) {
-    for _, p := range(a.updateQueue()) {
+    for _, p := range(a.UpdateQueue()) {
         (*grid[p.X][p.Y]).Power()
     }
 }
@@ -73,7 +73,7 @@ type MemCell struct {
     Direction Direction
     State bool    // State -> On/Off
 }
-func (a MemCell) updateQueue() []Point {
+func (a MemCell) UpdateQueue() []Point {
     return []Point{
         dir2point(a.Direction, Point{1, 1}),
     }
@@ -97,7 +97,7 @@ func (mc *MemCell) Power() {
 // Works as source that can be turned off or on
 func (a *MemCell) Update(grid _lgrid) {
     if(!a.State) {return}
-    p := a.updateQueue()[0]
+    p := a.UpdateQueue()[0]
     cell := grid[p.X][p.Y]
     (*cell).Power()
 }
@@ -111,7 +111,7 @@ type Flash struct {
 // Same as memcell
 func (f Flash) forcedUpdate() bool { return !f.Used }
 
-func (a Flash) updateQueue() []Point {
+func (a Flash) UpdateQueue() []Point {
     return []Point{
         dir2point(NORTH, Point{1, 1}),
         dir2point(EAST,  Point{1, 1}),
@@ -132,7 +132,7 @@ func (flash *Flash) Update(grid _lgrid) {
     if(flash.Used) {
         return
     } else { flash.Used = true }
-    for _, p := range(flash.updateQueue()) {
+    for _, p := range(flash.UpdateQueue()) {
         (*grid[p.X][p.Y]).Power()
     }
 }
@@ -151,7 +151,7 @@ func (a *Get) Power() {
     a.State = true
 }
 
-func (a Get) updateQueue() []Point {
+func (a Get) UpdateQueue() []Point {
     return []Point{
         dir2point(a.Direction, Point{1, 1}),
     }
@@ -164,7 +164,7 @@ func (get *Get) Update(grid _lgrid) {
     p1 := dir2point(rotateDir(get.Direction, BACK), Point{1, 1})
     b1 := grid[p1.X][p1.Y]
     if(get.State) {
-        p2 := get.updateQueue()[0]
+        p2 := get.UpdateQueue()[0]
         b2 := grid[p2.X][p2.Y]
         (*b2).Power()
         get.State = false
@@ -187,7 +187,7 @@ func (a *Random) Update(g _lgrid) {
     case 0:
         return
     case 2:
-        p := a.updateQueue()[0]
+        p := a.UpdateQueue()[0]
         (*g[p.X][p.Y]).Power()
     }
     a.Lit = 0
@@ -206,7 +206,7 @@ func (a *Random) Power() {
 func (a Random) Check() bool {
     return a.Lit == 2
 }
-func (a Random) updateQueue() []Point {
+func (a Random) UpdateQueue() []Point {
     return []Point{
         dir2point(a.Direction, Point{1, 1}),
     }
@@ -219,7 +219,7 @@ type DoubleMemCell struct {
     lcount uint
     State bool    // State -> On/Off
 }
-func (a DoubleMemCell) updateQueue() []Point {
+func (a DoubleMemCell) UpdateQueue() []Point {
     return []Point{
         dir2point(a.Direction, Point{1, 1}),
     }
@@ -240,7 +240,7 @@ func (a *DoubleMemCell) Power() {
 // Works as source that can be turned off or on
 func (a *DoubleMemCell) Update(grid _lgrid) {
     if(a.State) {
-        p := a.updateQueue()[0]
+        p := a.UpdateQueue()[0]
         cell := grid[p.X][p.Y]
         (*cell).Power()
     }

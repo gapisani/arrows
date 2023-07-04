@@ -103,7 +103,7 @@ func (grid *Grid) Update() []Point {
 
         (*cell).Update(g)
         // list of points that needs to be loaded in next tick
-        for _, rp := range((*cell).updateQueue()) {
+        for _, rp := range((*cell).UpdateQueue()) {
             newUpdate = append(newUpdate, Point{rp.X+p.X-1, rp.Y+p.Y-1})
         }
         if((*cell).forcedUpdate()) {
