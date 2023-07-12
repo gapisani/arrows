@@ -4,10 +4,14 @@ type Grid struct {
     // Contains all cells with arrows
     cells []Cell
 
+    buff []Cell
+
     width, height uint
 
     // Used for smart cells loading, could be changed in future
     updateQueue []Point
+
+    ENABLE_BUFF bool
 }
 
 // Get size of the grid
@@ -24,6 +28,17 @@ func (grid *Grid) Init(w, h uint) {
 
 // Returns pointer to cell at x, y
 func (grid *Grid) GetCell(x, y uint) *Cell {
+    index := y*grid.width + x
+    if(index >= uint(len(grid.cells))) {
+        return nil
+    }
+    if(grid.cells[index] == nil) {
+        grid.cells[index] = &None{}
+    }
+    return &grid.cells[index]
+}
+
+func (grid *Grid) getFromBuff(x, y uint) *Cell {
     index := y*grid.width + x
     if(index >= uint(len(grid.cells))) {
         return nil
@@ -93,7 +108,11 @@ func (grid *Grid) Update() []Point {
                     c := Cell(None{})
                     g[j][i] = &c
                 } else {
-                    g[j][i] = grid.GetCell(uint(x), uint(y))
+                    if(grid.ENABLE_BUFF) {
+                        g[j][i] = grid.getFromBuff(uint(x), uint(y))
+                    } else {
+                        g[j][i] = grid.GetCell(uint(x), uint(y))
+                    }
                 }
                 i++
             }
@@ -108,6 +127,11 @@ func (grid *Grid) Update() []Point {
         }
         if((*cell).forcedUpdate()) {
             newUpdate = append(newUpdate, p)
+        }
+    }
+    if(grid.ENABLE_BUFF) {
+        for _, p := range(newUpdate) {
+            *grid.GetCell(p.X, p.Y) = *grid.getFromBuff(p.X, p.Y)
         }
     }
     // Swapping buffers instead of copying

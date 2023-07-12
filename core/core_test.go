@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-
-	// "time"
+    "runtime"
 
 	"github.com/gapisani/arrows/core"
 )
@@ -123,7 +122,7 @@ func _TestUpdate(t *testing.T) {
     }
 }
 
-func BenchmarkSerpinski(b *testing.B) {
+func _Bench_markSerpinski(b *testing.B) {
     g := core.Grid{}
     g.Init(5000, 5000)
     w, h := g.Dimensions()
@@ -141,6 +140,17 @@ func BenchmarkSerpinski(b *testing.B) {
     for t := 0; t <= 100; t++ {
         g.Update()
     }
+}
+
+func TestRam(t *testing.T) {
+    var m1, m2 runtime.MemStats
+    g := core.Grid{}
+    runtime.GC()
+    runtime.ReadMemStats(&m1)
+    g.Init(5000, 5000);
+    runtime.ReadMemStats(&m2)
+    fmt.Println("total:", m2.TotalAlloc - m1.TotalAlloc)
+    fmt.Println("mallocs:", m2.Mallocs - m1.Mallocs)
 }
 
 // func BenchmarkNormal(b *testing.B) {
