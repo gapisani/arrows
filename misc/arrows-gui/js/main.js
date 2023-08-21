@@ -116,4 +116,4 @@ var lastPreX = 0, lastPreY = 0;
 
 initCore();
 setPack();
-setInterval(() => mause_update(), 10)
+setInterval(() => mouse_update(), 10)
