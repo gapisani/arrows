@@ -179,7 +179,7 @@ canvas.onmousemove = function(e) {
     setPreview(images[packs[pack][type]], lastPreX, lastPreY);
 }
 
-function mause_update() {
+function mouse_update() {
     drawPreview(lastPreX, lastPreY, (GetCell(lastPreX + cameraX1, lastPreY + cameraY1).type != 0));
 }
 
