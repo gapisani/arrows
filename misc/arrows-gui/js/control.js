@@ -79,34 +79,38 @@ function keyDown(e) {
         case 'ArrowDown': dir = SOUTH; break;
         case 'ArrowRight': dir = EAST; break;
         case 'KeyQ': dir = dir <= 0? 3 : dir - 1; break;
-        case 'KeyE': dir = (dir + 1) % 3; break;
+        case 'KeyE': dir = dir >= 3? 0 : dir + 1; break;
         case 'KeyW':
             cameraY1 = cameraY2 <= Math.ceil(document.documentElement.clientHeight / scale)? 0 : cameraY1 - 1;
             cameraY2 = cameraY2 <= Math.ceil(document.documentElement.clientHeight / scale)? Math.ceil(document.documentElement.clientHeight / scale) : cameraY2 - 1;
             document.getElementById('displayY').innerText = 'Y: ' + cameraY1;
+            update_canvas();
             break;
         case 'KeyA':
             cameraX1 = cameraX2 <= Math.ceil(document.documentElement.clientWidth / scale)? 0 : cameraX1 - 1;
             cameraX2 = cameraX2 <= Math.ceil(document.documentElement.clientWidth / scale)? Math.ceil(document.documentElement.clientWidth / scale) : cameraX2 - 1;
             document.getElementById('displayX').innerText = 'X: ' + cameraX1;
+            update_canvas();
             break;
         case 'KeyS':
             cameraY1 = cameraY2 >= height? cameraY1 : cameraY1 + 1;
             cameraY2 = cameraY2 >= height? height : cameraY2 + 1;
             document.getElementById('displayY').innerText = 'Y: ' + cameraY1;
+            update_canvas();
                 break;
         case 'KeyD':
             cameraX1 = cameraX2 >= width? cameraX1 : cameraX1 + 1;
             cameraX2 = cameraX2 >= width? width : cameraX2 + 1;
             document.getElementById('displayX').innerText = 'X: ' + cameraX1;
+            update_canvas();
             break;
         case 'Minus':
             delay = delay <= minDelay? minDelay : delay - delayChange;
-            document.getElementById('displaySpeed').innerText = delay + 'ms';
+            document.getElementById('displaySpeed').innerHTML = `<p>${delay}ms</p>`;
             break;
         case 'Equal':
             delay = delay >= maxDelay? maxDelay : delay + delayChange;
-            document.getElementById('displaySpeed').innerText = delay + 'ms';
+            document.getElementById('displaySpeed').innerHTML = `<p>${delay}ms</p>`;
             break;
         case 'KeyX':
             pack = pack >= lastpack? 0 : pack + 1;
@@ -173,4 +177,22 @@ canvas.addEventListener('contextmenu', function(event) {
 
 canvas.onmousemove = function(e) {
     setPreview(images[packs[pack][type]], lastPreX, lastPreY);
+}
+
+function mouse_update() {
+    drawPreview(lastPreX, lastPreY, (GetCell(lastPreX + cameraX1, lastPreY + cameraY1).type != 0));
+}
+
+function update_canvas() {
+    var canv_x = canvas.width / scale;
+    var canv_y = canvas.height / scale;
+
+    for (let y = 0; y <= canv_y ; y++) {
+        for (let x = 0; x <= canv_x ; x++) {
+            const cell = GetCell(x + cameraX1, y + cameraY1);
+            if(cell != null) {
+                drawCell(x, y, cell.type, cell.dir, cell.powered);
+            }
+        }
+    }
 }
